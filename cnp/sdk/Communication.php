@@ -103,7 +103,9 @@ class Communication
         $password = $config['password'];
 
 
-        $headers = array('Content-type: text/xml; charset=UTF-8','Expect: ', 'Authorization: ' . $this->generateAuthCode($username, $password));
+        $headers = array('Content-type: application/com.vantivcnp.services-v2+xml',
+            'Accept: application/com.vantivcnp.services-v2+xml',
+            'Authorization: ' . $this->generateAuthCode($username, $password));
 
 //        if ((int) $config['print_xml']) {
 //            echo $req;
