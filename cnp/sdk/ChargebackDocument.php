@@ -38,7 +38,7 @@ class ChargebackDocument
     public function replaceDocument($case_id, $document_id, $file)
     {
         $request_url = $this->config['url'] . "/replace/" . $case_id . "/" . $document_id;
-        return $this->comm->httpPutRequest($request_url, $file, $this->config, $this->useSimpleXml);
+        return $this->comm->httpPutDocumentRequest($request_url, $file, $this->config, $this->useSimpleXml);
     }
 
     public function removeDocument($case_id, $document_id)

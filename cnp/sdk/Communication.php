@@ -96,6 +96,45 @@ class Communication
 
     }
 
+    public function httpPutRequest($request_url, $request_body, $hash_config=NULL, $useSimpleXml=false)
+    {
+        $config = Obj2xml::getConfig($hash_config);
+        $username = $config['username'];
+        $password = $config['password'];
+
+
+        $headers = array('Content-type: text/xml; charset=UTF-8','Expect: ', 'Authorization: ' . $this->generateAuthCode($username, $password));
+
+//        if ((int) $config['print_xml']) {
+//            echo $req;
+//        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
+        curl_setopt($ch, CURLOPT_PUT, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $request_url);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+        $output = curl_exec($ch);
+        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (! $output) {
+            throw new \Exception (curl_error($ch));
+        } else {
+            curl_close($ch);
+            if ((int) $config['print_xml']) {
+                echo $output;
+            }
+            $output = Utils::generateRetrievalResponse($output, $useSimpleXml);
+            return $output;
+        }
+
+    }
+
     public function httpGetDocumentRequest($request_url, $path, $hash_config=NULL, $useSimpleXml=false)
     {
         $config = Obj2xml::getConfig($hash_config);
@@ -214,7 +253,7 @@ class Communication
 
     }
 
-    public function httpPutRequest($request_url, $filepath, $hash_config=NULL, $useSimpleXml=false)
+    public function httpPutDocumentRequest($request_url, $filepath, $hash_config=NULL, $useSimpleXml=false)
     {
         $config = Obj2xml::getConfig($hash_config);
         $username = $config['username'];
