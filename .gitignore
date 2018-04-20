@@ -7,4 +7,4 @@ reports/
 /vendor
 composer.lock
 /lib
-/cnp_SDK_config.ini
+/chargeback_SDK_config.ini
