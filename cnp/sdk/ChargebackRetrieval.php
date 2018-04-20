@@ -31,17 +31,19 @@ class ChargebackRetrieval
 {
     private $useSimpleXml = false;
     private $config;
+    private $comm;
 
     public function __construct($treeResponse = false, $overrides = array())
     {
         $this->useSimpleXml = $treeResponse;
         $this->config = Utils::getConfig($overrides);
+        $this->comm = new Communication();
     }
 
     public function getChargebackByCaseId($case_id)
     {
         $request_url = $this->config['url'] . "/" . $case_id;
-        return Communication::httpGetRequest($request_url, $this->config, $this->useSimpleXml);
+        return  $this->comm->httpGetRequest($request_url, $this->config, $this->useSimpleXml);
     }
 
     public function getChargebacksByDate($date)
@@ -84,6 +86,6 @@ class ChargebackRetrieval
             $request_url .= $prefix . $key . "=" . $value;
             $prefix = "&";
         }
-        return Communication::httpGetRequest($request_url, $this->config);
+        return  $this->comm->httpGetRequest($request_url, $this->config);
     }
 }

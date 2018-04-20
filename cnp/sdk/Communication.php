@@ -25,7 +25,7 @@
 namespace cnp\sdk;
 class Communication
 {
-    public static function httpRequest($req,$hash_config=NULL)
+    public function httpRequest($req,$hash_config=NULL)
     {
         $config = Obj2xml::getConfig($hash_config);
 
@@ -59,11 +59,12 @@ class Communication
 
     }
 
-    public static function httpGetRequest($request_url, $hash_config=NULL, $useSimpleXml=false)
+    public function httpGetRequest($request_url, $hash_config=NULL, $useSimpleXml=false)
     {
         $config = Obj2xml::getConfig($hash_config);
-        echo($request_url);
-        $headers = array('Content-type: text/xml; charset=UTF-8','Expect: ');
+        $username = $config['username'];
+        $password = $config['password'];
+        $headers = array('Content-type: text/xml; charset=UTF-8','Expect: ', 'Authorization: '.$this->generateAuthCode($username, $password));
 
 //        if ((int) $config['print_xml']) {
 //            echo $req;
@@ -93,5 +94,130 @@ class Communication
             return $output;
         }
 
+    }
+
+    public function httpDeleteRequest($request_url, $hash_config=NULL, $useSimpleXml=false)
+    {
+        $config = Obj2xml::getConfig($hash_config);
+        $username = $config['username'];
+        $password = $config['password'];
+        $headers = array('Content-type: text/xml; charset=UTF-8','Expect: ', 'Authorization: '.$this->generateAuthCode($username, $password));
+
+//        if ((int) $config['print_xml']) {
+//            echo $req;
+//        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $request_url);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+        curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+        $output = curl_exec($ch);
+        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (! $output) {
+            throw new \Exception (curl_error($ch));
+        } else {
+            curl_close($ch);
+            if ((int) $config['print_xml']) {
+                echo $output;
+            }
+            $output = Utils::generateRetrievalResponse($output, $useSimpleXml);
+            return $output;
+        }
+
+    }
+
+    public function httpPostRequest($request_url, $filepath, $hash_config=NULL, $useSimpleXml=false)
+    {
+        $config = Obj2xml::getConfig($hash_config);
+        $username = $config['username'];
+        $password = $config['password'];
+
+
+        $file = fopen($filepath, 'r');
+
+        $headers = array('Content-type: text/xml; charset=UTF-8','Expect: ', 'Authorization: ' . $this->generateAuthCode($username, $password));
+
+//        if ((int) $config['print_xml']) {
+//            echo $req;
+//        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $request_url);
+        curl_setopt($ch, CURLOPT_INFILE, $file);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+        curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+        $output = curl_exec($ch);
+        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (! $output) {
+            throw new \Exception (curl_error($ch));
+        } else {
+            curl_close($ch);
+            if ((int) $config['print_xml']) {
+                echo $output;
+            }
+            $output = Utils::generateRetrievalResponse($output, $useSimpleXml);
+            return $output;
+        }
+
+    }
+
+    public function httpPutRequest($request_url, $filepath, $hash_config=NULL, $useSimpleXml=false)
+    {
+        $config = Obj2xml::getConfig($hash_config);
+        $username = $config['username'];
+        $password = $config['password'];
+
+
+        $file = fopen($filepath, 'r');
+
+        $headers = array('Content-type: text/xml; charset=UTF-8','Expect: ', 'Authorization: ' . $this->generateAuthCode($username, $password));
+
+//        if ((int) $config['print_xml']) {
+//            echo $req;
+//        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_PROXY, $config['proxy']);
+        curl_setopt($ch, CURLOPT_PUT, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_URL, $request_url);
+        curl_setopt($ch, CURLOPT_INFILE, $file);
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+        curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $config['timeout']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+        $output = curl_exec($ch);
+        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (! $output) {
+            throw new \Exception (curl_error($ch));
+        } else {
+            curl_close($ch);
+            if ((int) $config['print_xml']) {
+                echo $output;
+            }
+            $output = Utils::generateRetrievalResponse($output, $useSimpleXml);
+            return $output;
+        }
+
+    }
+
+    public function generateAuthCode($username, $password){
+        return "Basic " . base64_encode($username) . ":" . base64_encode($password);
     }
 }
