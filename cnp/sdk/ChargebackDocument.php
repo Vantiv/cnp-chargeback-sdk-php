@@ -31,9 +31,8 @@ class ChargebackDocument
 
     public function retrieveDocument($case_id, $document_id, $path)
     {
-        $filename = end(explode("/", $file));
-        $request_url = $this->config['url'] . "/upload/" . $case_id . "/" . $filename;
-        return $this->comm->httpPostRequest($request_url, $file, $this->config, $this->useSimpleXml);
+        $request_url = $this->config['url'] . "/retrieve/" . $case_id . "/" . $document_id;
+        return $this->comm->httpGetDocumentRequest($request_url, $path, $this->config, $this->useSimpleXml);
     }
 
     public function replaceDocument($case_id, $document_id, $file)
