@@ -76,7 +76,7 @@ class Utils
         return $respObj;
     }
 
-    public static function generateUpdateRequest($hash){
+    public static function generateChargebackUpdateRequest($hash){
         $xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><chargebackUpdateRequest />");
         $xml-> addAttribute('xmlns:xmlns','http://www.vantivcnp.com/chargebacks');
         foreach ($hash as $key => $value) {

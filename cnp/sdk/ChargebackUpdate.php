@@ -23,77 +23,86 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+
 namespace cnp\sdk;
 require_once realpath(dirname(__FILE__)) . '/Chargeback.php';
+
 class ChargebackUpdate
 {
     private $useSimpleXml = false;
     private $config;
     private $comm;
 
-    public function __construct($treeResponse=false, $overrides=array())
+    public function __construct($treeResponse = false, $overrides = array())
     {
         $this->useSimpleXml = $treeResponse;
         $this->config = Obj2xml::getConfig($overrides);
         $this->comm = new Communication();
     }
 
-    public function assignCaseToUser($case_id, $user_id, $note){
+    public function assignCaseToUser($case_id, $user_id, $note)
+    {
         $hash = array('activityType' => 'ASSIGN_TO_USER',
             'assignedTo' => $user_id,
             'note' => $note);
 
-        $request_body = Utils::generateUpdateRequest($hash);
+        $request_body = Utils::generateChargebackUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
-    public function addNoteToCase($case_id, $note){
+    public function addNoteToCase($case_id, $note)
+    {
         $hash = array('activityType' => 'ADD_NOTE',
             'note' => $note);
 
-        $request_body = Utils::generateUpdateRequest($hash);
+        $request_body = Utils::generateChargebackUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
-    public function assumeLiability($case_id, $note){
+    public function assumeLiability($case_id, $note)
+    {
         $hash = array('activityType' => 'MERCHANT_ACCEPTS_LIABILITY',
             'note' => $note);
 
-        $request_body = Utils::generateUpdateRequest($hash);
+        $request_body = Utils::generateChargebackUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
-    public function representCase($case_id, $note, $representment_amount = NULL){
+    public function representCase($case_id, $note, $representment_amount = NULL)
+    {
         $hash = array('activityType' => 'MERCHANT_REPRESENT',
             'note' => $note);
 
-        if($representment_amount != NULL){
+        if ($representment_amount != NULL) {
             $hash['representedAmount'] = $representment_amount;
         }
 
-        $request_body = Utils::generateUpdateRequest($hash);
+        $request_body = Utils::generateChargebackUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
-    public function respondToRetrievalRequest($case_id, $note){
+    public function respondToRetrievalRequest($case_id, $note)
+    {
         $hash = array('activityType' => 'MERCHANT_RESPOND',
             'note' => $note);
 
-        $request_body = Utils::generateUpdateRequest($hash);
+        $request_body = Utils::generateChargebackUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
-    public function requestArbitration($case_id, $note){
+    public function requestArbitration($case_id, $note)
+    {
         $hash = array('activityType' => 'MERCHANT_REQUESTS_ARBITRATION',
             'note' => $note);
 
-        $request_body = Utils::generateUpdateRequest($hash);
+        $request_body = Utils::generateChargebackUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
-    private function getUpdateResponse($case_id, $request_body){
+    private function getUpdateResponse($case_id, $request_body)
+    {
         echo $request_body;
-        $request_url =  $this->config['url'] . "/" . $case_id;
+        $request_url = $this->config['url'] . "/" . $case_id;
         return $this->comm->httpPutRequest($request_url, $request_body, $this->config, $this->useSimpleXml);
     }
 }
