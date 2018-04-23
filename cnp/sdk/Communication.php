@@ -114,7 +114,7 @@ class Communication
             if ((int)$config['print_xml']) {
                 echo $output;
             }
-            $output = Utils::generateRetrievalResponse($output, $useSimpleXml);
+            $output = Utils::generateResponseObject($output, $useSimpleXml);
             return $output;
         }
     }

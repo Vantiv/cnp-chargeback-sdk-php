@@ -76,6 +76,6 @@ class ChargebackUpdate
 
     private function getUpdateResponse($case_id, $request_body){
         $request_url =  $this->config['url'] . "/" . $case_id;
-        return $this->comm->httpPutRequest($request_url, $request_body);
+        return $this->comm->httpPutRequest($request_url, $request_body, $this->config, $this->useSimpleXml);
     }
 }

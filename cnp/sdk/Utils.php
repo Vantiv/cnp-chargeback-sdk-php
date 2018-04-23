@@ -65,22 +65,14 @@ class Utils
         return $config;
     }
 
-    public static function generateRetrievalResponse($data, $useSimpleXml)
+    public static function generateResponseObject($data, $useSimpleXml)
     {
         if ($useSimpleXml) {
             $respObj = simplexml_load_string($data);
         } else {
-            $respObj = Utils::domParser($data);
+            $respObj = XmlParser::domParser($data);
         }
 
         return $respObj;
-    }
-
-    public static function domParser($xml)
-    {
-        $doc = new \DOMDocument();
-        $doc->loadXML($xml);
-
-        return $doc;
     }
 }
