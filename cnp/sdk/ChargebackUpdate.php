@@ -39,42 +39,60 @@ class ChargebackUpdate
     }
 
     public function assignCaseToUser($case_id, $user_id, $note){
-        $request_body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><chargebackUpdateRequest xmlns="http://www.vantivcnp.com/chargebacks"><activityType>ASSIGN_TO_USER</activityType><assignedTo>'.$user_id.'</assignedTo><note>'.$note.'</note></chargebackUpdateRequest>';
+        $hash = array('activityType' => 'ASSIGN_TO_USER',
+            'assignedTo' => $user_id,
+            'note' => $note);
+
+        $request_body = Utils::generateUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
     public function addNoteToCase($case_id, $note){
-        $request_body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><chargebackUpdateRequest xmlns="http://www.vantivcnp.com/chargebacks"><activityType>ADD_NOTE</activityType><note>'.$note.'</note></chargebackUpdateRequest>';
+        $hash = array('activityType' => 'ADD_NOTE',
+            'note' => $note);
+
+        $request_body = Utils::generateUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
     public function assumeLiability($case_id, $note){
-        $header = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-        $request_body = $header . '<chargebackUpdateRequest xmlns="http://www.vantivcnp.com/chargebacks"><activityType>MERCHANT_ACCEPTS_LIABILITY</activityType><note>'.$note.'</note></chargebackUpdateRequest>';
+        $hash = array('activityType' => 'MERCHANT_ACCEPTS_LIABILITY',
+            'note' => $note);
+
+        $request_body = Utils::generateUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
     public function representCase($case_id, $note, $representment_amount = NULL){
-        $request_body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><chargebackUpdateRequest xmlns="http://www.vantivcnp.com/chargebacks"><activityType>MERCHANT_REPRESENT</activityType><note>'.$note.'</note>';
+        $hash = array('activityType' => 'MERCHANT_REPRESENT',
+            'note' => $note);
+
         if($representment_amount != NULL){
-            $request_body .= '<representedAmount>' . $representment_amount . '</representedAmount>';
+            $hash['representedAmount'] = $representment_amount;
         }
 
-        $request_body .= '</chargebackUpdateRequest>';
+        $request_body = Utils::generateUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
     public function respondToRetrievalRequest($case_id, $note){
-        $request_body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><chargebackUpdateRequest xmlns="http://www.vantivcnp.com/chargebacks"><activityType>MERCHANT_RESPOND</activityType><note>' . $note . '</note></chargebackUpdateRequest>';
+        $hash = array('activityType' => 'MERCHANT_RESPOND',
+            'note' => $note);
+
+        $request_body = Utils::generateUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
     public function requestArbitration($case_id, $note){
-        $request_body = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><chargebackUpdateRequest xmlns="http://www.vantivcnp.com/chargebacks"><activityType>MERCHANT_REQUESTS_ARBITRATION</activityType><note>'.$note.'</note></chargebackUpdateRequest>';
+        $hash = array('activityType' => 'MERCHANT_REQUESTS_ARBITRATION',
+            'note' => $note);
+
+        $request_body = Utils::generateUpdateRequest($hash);
         return $this->getUpdateResponse($case_id, $request_body);
     }
 
     private function getUpdateResponse($case_id, $request_body){
+        echo $request_body;
         $request_url =  $this->config['url'] . "/" . $case_id;
         return $this->comm->httpPutRequest($request_url, $request_body, $this->config, $this->useSimpleXml);
     }
