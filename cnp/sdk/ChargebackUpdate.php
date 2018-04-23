@@ -36,7 +36,7 @@ class ChargebackUpdate
     public function __construct($treeResponse = false, $overrides = array())
     {
         $this->useSimpleXml = $treeResponse;
-        $this->config = Obj2xml::getConfig($overrides);
+        $this->config = Utils::getConfig($overrides);
         $this->comm = new Communication();
     }
 

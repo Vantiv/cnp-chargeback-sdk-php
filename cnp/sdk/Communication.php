@@ -44,7 +44,7 @@ class Communication
 
     public function httpGetDocumentRequest($request_url, $path, $hash_config = NULL, $useSimpleXml = false)
     {
-        $config = Obj2xml::getConfig($hash_config);
+        $config = Utils::getConfig($hash_config);
         $username = $config['username'];
         $password = $config['password'];
         $proxy = $config['proxy'];
@@ -53,19 +53,15 @@ class Communication
         
         $file = fopen($path, 'w+');
         $ch = $this->generateBaseCurlHandler($request_url, "GET", $headers, $proxy, $timeout);
-        $output = curl_exec($ch);
+        $httpResponse = curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if (!$output) {
-            fclose($file);
-            throw new \Exception (curl_error($ch));
-        } else {
-            fclose($file);
-            curl_close($ch);
-            if ((int)$config['print_xml']) {
-                echo $output;
-            }
+        echo "response : " . $responseCode;
+        $this->validateResponse($httpResponse, $responseCode);
+        fclose($file);
+        curl_close($ch);
+        if ((int)$config['print_xml']) {
+            echo $httpResponse;
         }
-
     }
 
     public function httpDeleteRequest($request_url, $hash_config = NULL, $useSimpleXml = false)
@@ -87,7 +83,7 @@ class Communication
 
     private function execHttpRequest($request_url, $type, $headers = array(), $request_body = NULL, $filepath = NULL, $hash_config = array(), $useSimpleXml = false)
     {
-        $config = Obj2xml::getConfig($hash_config);
+        $config = Utils::getConfig($hash_config);
         $username = $config['username'];
         $password = $config['password'];
         $proxy = $config['proxy'];
@@ -105,17 +101,27 @@ class Communication
             curl_setopt($ch, CURLOPT_INFILE, $file);
         }
 
-        $output = curl_exec($ch);
+        $httpResponse = curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if (!$output) {
-            throw new \Exception (curl_error($ch));
-        } else {
-            curl_close($ch);
-            if ((int)$config['print_xml']) {
-                echo $output;
-            }
-            $output = Utils::generateResponseObject($output, $useSimpleXml);
-            return $output;
+        $this->validateResponse($httpResponse, $responseCode);
+        curl_close($ch);
+        if ((int)$config['print_xml']) {
+            echo $httpResponse;
+        }
+        $httpResponse = Utils::generateResponseObject($httpResponse, $useSimpleXml);
+        return $httpResponse;
+    }
+
+    private function validateResponse($httpResponse, $statusCode)
+    {
+        if(!$httpResponse){
+            throw new ChargebackException("There was an exception while fetching the response.");
+        }
+        else if($statusCode != 200 || $statusCode != "200")
+        {
+            echo $httpResponse;
+            $errorResponse = Utils::generateResponseObject($httpResponse, true);
+            throw new ChargebackException($errorResponse->errors->error, $statusCode);
         }
     }
 
