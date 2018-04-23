@@ -11,46 +11,44 @@ namespace cnp\sdk;
 
 class ChargebackDocument
 {
-    private $useSimpleXml = false;
     private $config;
-    private $comm;
+    private $communication;
 
     public function __construct($treeResponse = false, $overrides = array())
     {
-        $this->useSimpleXml = $treeResponse;
         $this->config = Utils::getConfig($overrides);
-        $this->comm = new Communication();
+        $this->communication = new Communication($treeResponse, $overrides);
     }
 
-    public function uploadDocument($case_id, $file)
+    public function uploadDocument($caseId, $filepath)
     {
-        $filename = end(explode("/", $file));
-        $request_url = $this->config['url'] . "/upload/" . $case_id . "/" . $filename;
-        return $this->comm->httpPostRequest($request_url, $file, $this->config, $this->useSimpleXml);
+        $documentId = end(explode("/", $filepath));
+        $requestUrl = $this->config['url'] . "/upload/" . $caseId . "/" . $documentId;
+        return $this->communication->httpPostRequest($requestUrl, $filepath);
     }
 
-    public function retrieveDocument($case_id, $document_id, $path)
+    public function retrieveDocument($caseId, $documentId, $downloadPath)
     {
-        $request_url = $this->config['url'] . "/retrieve/" . $case_id . "/" . $document_id;
-        return $this->comm->httpGetDocumentRequest($request_url, $path, $this->config, $this->useSimpleXml);
+        $requestUrl = $this->config['url'] . "/retrieve/" . $caseId . "/" . $documentId;
+        return $this->communication->httpGetDocumentRequest($requestUrl, $downloadPath);
     }
 
-    public function replaceDocument($case_id, $document_id, $file)
+    public function replaceDocument($caseId, $documentId, $filepath)
     {
-        $request_url = $this->config['url'] . "/replace/" . $case_id . "/" . $document_id;
-        return $this->comm->httpPutDocumentRequest($request_url, $file, $this->config, $this->useSimpleXml);
+        $requestUrl = $this->config['url'] . "/replace/" . $caseId . "/" . $documentId;
+        return $this->communication->httpPutDocumentRequest($requestUrl, $filepath);
     }
 
-    public function removeDocument($case_id, $document_id)
+    public function removeDocument($caseId, $documentId)
     {
-        $request_url = $this->config['url'] . "/remove/" . $case_id . "/" . $document_id;
-        return $this->comm->httpDeleteRequest($request_url);
+        $requestUrl = $this->config['url'] . "/remove/" . $caseId . "/" . $documentId;
+        return $this->communication->httpDeleteRequest($requestUrl);
 
     }
 
-    public function listDocuments($case_id)
+    public function listDocuments($caseId)
     {
-        $request_url = $this->config['url'] . "/list/" . $case_id;
-        return $this->comm->httpGetRequest($request_url);
+        $requestUrl = $this->config['url'] . "/list/" . $caseId;
+        return $this->communication->httpGetRequest($requestUrl);
     }
 }

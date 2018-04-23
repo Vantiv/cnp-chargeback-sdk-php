@@ -22,19 +22,20 @@
 * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 * OTHER DEALINGS IN THE SOFTWARE.
 */
+
 namespace cnp\sdk;
 require_once realpath(dirname(__FILE__)) . '/UrlMapper.php';
 
-function writeConfig($line,$handle)
+function writeConfig($line, $handle)
 {
     foreach ($line as $keys => $values) {
-        fwrite($handle, $keys. '');
+        fwrite($handle, $keys . '');
         if (is_array($values)) {
             foreach ($values as $key2 => $value2) {
-                fwrite($handle,"['" . $key2 . "'] =" . $value2 .  PHP_EOL);
+                fwrite($handle, "['" . $key2 . "'] =" . $value2 . PHP_EOL);
             }
         } else {
-            fwrite($handle,' =' . $values);
+            fwrite($handle, ' =' . $values);
             fwrite($handle, PHP_EOL);
         }
     }
@@ -62,23 +63,24 @@ function initialize()
             "prelive => https://payments.vantivprelive.com/vap/communicator/online \n" .
             "transact-prelive => https://transact.vantivprelive.com/vap/communicator/online" . PHP_EOL;
         $url = UrlMapper::getUrl(trim(fgets(STDIN)));
-	
+
         $line['url'] = $url;
         print "Please input the proxy, if no proxy hit enter key: ";
         $line['proxy'] = formatConfigValue(STDIN);
 
         $line['print_xml'] = '0';
         $line['neuter_xml'] = "0";
-        writeConfig($line,$handle);
+        writeConfig($line, $handle);
         #default http timeout set to 500 ms
-        fwrite($handle, "timeout =  500".  PHP_EOL);
+        fwrite($handle, "timeout =  500" . PHP_EOL);
     }
     fclose($handle);
     print "The Vantiv eCommerce configuration file has been generated, " .
-        "the file is located in the lib directory". PHP_EOL;
+        "the file is located in the lib directory" . PHP_EOL;
 }
 
-function formatConfigValue($str){
+function formatConfigValue($str)
+{
     return "\"" . trim(fgets($str)) . "\"";
 }
 

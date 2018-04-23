@@ -29,21 +29,19 @@ require_once realpath(dirname(__FILE__)) . '/Chargeback.php';
 
 class ChargebackRetrieval
 {
-    private $useSimpleXml = false;
     private $config;
-    private $comm;
+    private $communication;
 
     public function __construct($treeResponse = false, $overrides = array())
     {
-        $this->useSimpleXml = $treeResponse;
         $this->config = Utils::getConfig($overrides);
-        $this->comm = new Communication();
+        $this->communication = new Communication($treeResponse, $overrides);
     }
 
-    public function getChargebackByCaseId($case_id)
+    public function getChargebackByCaseId($caseId)
     {
-        $request_url = $this->config['url'] . "/" . $case_id;
-        return  $this->comm->httpGetRequest($request_url, $this->config, $this->useSimpleXml);
+        $request_url = $this->config['url'] . "/" . $caseId;
+        return $this->communication->httpGetRequest($request_url);
     }
 
     public function getChargebacksByDate($date)
@@ -86,6 +84,6 @@ class ChargebackRetrieval
             $request_url .= $prefix . $key . "=" . $value;
             $prefix = "&";
         }
-        return  $this->comm->httpGetRequest($request_url, $this->config);
+        return $this->communication->httpGetRequest($request_url);
     }
 }

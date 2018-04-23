@@ -13,12 +13,13 @@ use Exception;
 
 class ChargebackException extends \Exception
 {
-    public function __construct($message, $code = 0, Exception $previous = null) {
+    public function __construct($message, $code = 0, Exception $previous = null)
+    {
         parent::__construct($message, $code, $previous);
     }
 
-    // custom string representation of object
-    public function __toString() {
+    public function __toString()
+    {
         return "ChargebackException : [{$this->code}]: {$this->message}\n";
     }
 }

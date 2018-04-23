@@ -26,111 +26,114 @@
 namespace cnp\sdk;
 class Communication
 {
-    const CONTENT_TYPE_HEADER ="Content-type: application/com.vantivcnp.services-v2+xml";
+    const CONTENT_TYPE_HEADER = "Content-type: application/com.vantivcnp.services-v2+xml";
     const ACCEPT_HEADER = "Accept: application/com.vantivcnp.services-v2+xml";
 
-    public function httpGetRequest($request_url, $hash_config = NULL, $useSimpleXml = false)
+    private $config;
+    private $useSimpleXml;
+
+    public function __construct($treeResponse = false, $overrides = array())
     {
+        $this->useSimpleXml = $treeResponse;
+        $this->config = Utils::getConfig($overrides);
+    }
+
+    public function httpGetRequest($requestUrl)
+    {
+        $this->printToConsole("\nGET request to: ", $requestUrl);
         $headers = array(self::CONTENT_TYPE_HEADER, self::ACCEPT_HEADER);
-        return $this->execHttpRequest($request_url, "PUT", $headers, NULL, NULL, $hash_config, $useSimpleXml);
+        return $this->execHttpRequest($requestUrl, "GET", $headers);
 
     }
 
-    public function httpPutRequest($request_url, $request_body, $hash_config = NULL, $useSimpleXml = false)
+    public function httpPutRequest($requestUrl, $requestBody)
     {
+        $this->printToConsole("\nPUT request to: ", $requestUrl);
         $headers = array(self::CONTENT_TYPE_HEADER, self::ACCEPT_HEADER);
-        return $this->execHttpRequest($request_url, "PUT", $headers, $request_body, NULL, $hash_config, $useSimpleXml);
+        return $this->execHttpRequest($requestUrl, "PUT", $headers, $requestBody);
     }
 
-    public function httpGetDocumentRequest($request_url, $path, $hash_config = NULL, $useSimpleXml = false)
+    public function httpGetDocumentRequest($requestUrl, $downloadPath)
     {
-        $config = Utils::getConfig($hash_config);
-        $username = $config['username'];
-        $password = $config['password'];
-        $proxy = $config['proxy'];
-        $timeout = $config['timeout'];
-        $headers = array('Content-type: text/xml; charset=UTF-8', 'Expect: ', $this->generateAuthHeader($username, $password));
-        
-        $file = fopen($path, 'w+');
-        $ch = $this->generateBaseCurlHandler($request_url, "GET", $headers, $proxy, $timeout);
+        $this->printToConsole("\nGET request to: ", $requestUrl);
+        $headers = array($this->generateAuthHeader());
+        $file = fopen($downloadPath, 'w+');
+        $ch = $this->generateBaseCurlHandler($requestUrl, "GET", $headers);
         $httpResponse = curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        echo "response : " . $responseCode;
         $this->validateResponse($httpResponse, $responseCode);
         fclose($file);
         curl_close($ch);
-        if ((int)$config['print_xml']) {
-            echo $httpResponse;
-        }
+        $this->printToConsole("\nDocument saved at: ", $downloadPath);
     }
 
-    public function httpDeleteRequest($request_url, $hash_config = NULL, $useSimpleXml = false)
+    public function httpDeleteRequest($requestUrl)
     {
-        return $this->execHttpRequest($request_url, "DELETE", array(), NULL, NULL, $hash_config, $useSimpleXml);
+        $this->printToConsole("\nDELETE request to: ", $requestUrl);
+        return $this->execHttpRequest($requestUrl, "DELETE");
     }
 
-    public function httpPostRequest($request_url, $filepath, $hash_config = NULL, $useSimpleXml = false)
+    public function httpPostRequest($requestUrl, $uploadFilepath)
     {
-        return $this->execHttpRequest($request_url, "POST", array(), NULL, $filepath, $hash_config, $useSimpleXml);
-
-    }
-
-    public function httpPutDocumentRequest($request_url, $filepath, $hash_config = NULL, $useSimpleXml = false)
-    {
-        return $this->execHttpRequest($request_url, "PUT", array(), NULL, $filepath, $hash_config, $useSimpleXml);
+        $this->printToConsole("\nPOST request to: ", $requestUrl);
+        $this->printToConsole("\nFile: ", $uploadFilepath);
+        $headers = array("Content-Type: " . mime_content_type($uploadFilepath));
+        return $this->execHttpRequest($requestUrl, "POST", $headers, NULL, $uploadFilepath);
 
     }
 
-    private function execHttpRequest($request_url, $type, $headers = array(), $request_body = NULL, $filepath = NULL, $hash_config = array(), $useSimpleXml = false)
+    public function httpPutDocumentRequest($requestUrl, $uploadFilepath)
     {
-        $config = Utils::getConfig($hash_config);
-        $username = $config['username'];
-        $password = $config['password'];
-        $proxy = $config['proxy'];
-        $timeout = $config['timeout'];
-        $auth_header = $this->generateAuthHeader($username, $password);
+        $this->printToConsole("\nPUT request to: ", $requestUrl);
+        $this->printToConsole("\nFile: ", $uploadFilepath);
+        $headers = array("Content-Type: " . mime_content_type($uploadFilepath));
+        return $this->execHttpRequest($requestUrl, "PUT", $headers, NULL, $uploadFilepath);
+    }
+
+    private function execHttpRequest($requestUrl, $requestType, $headers = array(), $requestBody = NULL, $uploadFilepath = NULL)
+    {
+        $auth_header = $this->generateAuthHeader();
         array_push($headers, $auth_header);
 
-
-        $ch = $this->generateBaseCurlHandler($request_url, $type, $headers, $proxy, $timeout);
-        if($request_body != NULL){
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $request_body);
+        $ch = $this->generateBaseCurlHandler($requestUrl, $requestType, $headers);
+        if ($requestBody != NULL) {
+            $this->printToConsole("\nRequest body: ", $requestBody);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
         }
-        if($filepath != NULL){
-            $file = fopen($filepath, 'r');
+        if ($uploadFilepath != NULL) {
+            $file = fopen($uploadFilepath, 'r');
             curl_setopt($ch, CURLOPT_INFILE, $file);
+            fclose($file);
         }
 
         $httpResponse = curl_exec($ch);
         $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $this->validateResponse($httpResponse, $responseCode);
         curl_close($ch);
-        if ((int)$config['print_xml']) {
-            echo $httpResponse;
-        }
-        $httpResponse = Utils::generateResponseObject($httpResponse, $useSimpleXml);
-        return $httpResponse;
+        $this->printToConsole("\nResponse: ", $httpResponse);
+        return Utils::generateResponseObject($httpResponse, $this->useSimpleXml);
     }
 
     private function validateResponse($httpResponse, $statusCode)
     {
-        if(!$httpResponse){
+        if (!$httpResponse) {
             throw new ChargebackException("There was an exception while fetching the response.");
-        }
-        else if($statusCode != 200 || $statusCode != "200")
-        {
-            echo $httpResponse;
+        } else if ($statusCode != 200 || $statusCode != "200") {
+            $this->printToConsole("\nError: ", $httpResponse);
             $errorResponse = Utils::generateResponseObject($httpResponse, true);
             throw new ChargebackException($errorResponse->errors->error, $statusCode);
         }
     }
 
-    private function generateBaseCurlHandler($request_url, $type, $headers, $proxy, $timeout){
+    private function generateBaseCurlHandler($requestUrl, $type, $headers)
+    {
+        $proxy = $this->config['proxy'];
+        $timeout = $this->config['timeout'];
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_PROXY, $proxy);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_URL, $request_url);
+        curl_setopt($ch, CURLOPT_URL, $requestUrl);
         curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
@@ -141,8 +144,17 @@ class Communication
 
     }
 
-    public function generateAuthHeader($username, $password)
+    public function generateAuthHeader()
     {
+        $username = $this->config['username'];
+        $password = $this->config['password'];
         return "Authorization: Basic " . base64_encode($username . ":" . $password);
+    }
+
+    private function printToConsole($prefixMessage, $message)
+    {
+        if ((int)$this->config['print_xml']) {
+            echo "\n" . $prefixMessage . $message;
+        }
     }
 }

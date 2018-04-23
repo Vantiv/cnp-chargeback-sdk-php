@@ -29,80 +29,77 @@ require_once realpath(dirname(__FILE__)) . '/Chargeback.php';
 
 class ChargebackUpdate
 {
-    private $useSimpleXml = false;
     private $config;
-    private $comm;
+    private $communication;
 
     public function __construct($treeResponse = false, $overrides = array())
     {
-        $this->useSimpleXml = $treeResponse;
         $this->config = Utils::getConfig($overrides);
-        $this->comm = new Communication();
+        $this->communication = new Communication($treeResponse, $overrides);
     }
 
-    public function assignCaseToUser($case_id, $user_id, $note)
+    public function assignCaseToUser($caseId, $userId, $note)
     {
         $hash = array('activityType' => 'ASSIGN_TO_USER',
-            'assignedTo' => $user_id,
+            'assignedTo' => $userId,
             'note' => $note);
 
-        $request_body = Utils::generateChargebackUpdateRequest($hash);
-        return $this->getUpdateResponse($case_id, $request_body);
+        $requestBody = Utils::generateChargebackUpdateRequest($hash);
+        return $this->getUpdateResponse($caseId, $requestBody);
     }
 
-    public function addNoteToCase($case_id, $note)
+    public function addNoteToCase($caseId, $note)
     {
         $hash = array('activityType' => 'ADD_NOTE',
             'note' => $note);
 
-        $request_body = Utils::generateChargebackUpdateRequest($hash);
-        return $this->getUpdateResponse($case_id, $request_body);
+        $requestBody = Utils::generateChargebackUpdateRequest($hash);
+        return $this->getUpdateResponse($caseId, $requestBody);
     }
 
-    public function assumeLiability($case_id, $note)
+    public function assumeLiability($caseId, $note)
     {
         $hash = array('activityType' => 'MERCHANT_ACCEPTS_LIABILITY',
             'note' => $note);
 
-        $request_body = Utils::generateChargebackUpdateRequest($hash);
-        return $this->getUpdateResponse($case_id, $request_body);
+        $requestBody = Utils::generateChargebackUpdateRequest($hash);
+        return $this->getUpdateResponse($caseId, $requestBody);
     }
 
-    public function representCase($case_id, $note, $representment_amount = NULL)
+    public function representCase($caseId, $note, $representmentAmount = NULL)
     {
         $hash = array('activityType' => 'MERCHANT_REPRESENT',
             'note' => $note);
 
-        if ($representment_amount != NULL) {
-            $hash['representedAmount'] = $representment_amount;
+        if ($representmentAmount != NULL) {
+            $hash['representedAmount'] = $representmentAmount;
         }
 
-        $request_body = Utils::generateChargebackUpdateRequest($hash);
-        return $this->getUpdateResponse($case_id, $request_body);
+        $requestBody = Utils::generateChargebackUpdateRequest($hash);
+        return $this->getUpdateResponse($caseId, $requestBody);
     }
 
-    public function respondToRetrievalRequest($case_id, $note)
+    public function respondToRetrievalRequest($caseId, $note)
     {
         $hash = array('activityType' => 'MERCHANT_RESPOND',
             'note' => $note);
 
-        $request_body = Utils::generateChargebackUpdateRequest($hash);
-        return $this->getUpdateResponse($case_id, $request_body);
+        $requestBody = Utils::generateChargebackUpdateRequest($hash);
+        return $this->getUpdateResponse($caseId, $requestBody);
     }
 
-    public function requestArbitration($case_id, $note)
+    public function requestArbitration($caseId, $note)
     {
         $hash = array('activityType' => 'MERCHANT_REQUESTS_ARBITRATION',
             'note' => $note);
 
-        $request_body = Utils::generateChargebackUpdateRequest($hash);
-        return $this->getUpdateResponse($case_id, $request_body);
+        $requestBody = Utils::generateChargebackUpdateRequest($hash);
+        return $this->getUpdateResponse($caseId, $requestBody);
     }
 
-    private function getUpdateResponse($case_id, $request_body)
+    private function getUpdateResponse($caseId, $requestBody)
     {
-        echo $request_body;
-        $request_url = $this->config['url'] . "/" . $case_id;
-        return $this->comm->httpPutRequest($request_url, $request_body, $this->config, $this->useSimpleXml);
+        $requestUrl = $this->config['url'] . "/" . $caseId;
+        return $this->communication->httpPutRequest($requestUrl, $requestBody);
     }
 }

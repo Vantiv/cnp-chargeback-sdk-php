@@ -76,12 +76,13 @@ class Utils
         return $respObj;
     }
 
-    public static function generateChargebackUpdateRequest($hash){
+    public static function generateChargebackUpdateRequest($hash)
+    {
         $xml = simplexml_load_string("<?xml version='1.0' encoding='utf-8'?><chargebackUpdateRequest />");
-        $xml-> addAttribute('xmlns:xmlns','http://www.vantivcnp.com/chargebacks');
+        $xml->addAttribute('xmlns:xmlns', 'http://www.vantivcnp.com/chargebacks');
         foreach ($hash as $key => $value) {
             if (((is_string($value)) || is_numeric($value))) {
-                $xml->addChild($key, str_replace('&','&amp;',$value));
+                $xml->addChild($key, $value);
             }
         }
         return $xml->asXML();
