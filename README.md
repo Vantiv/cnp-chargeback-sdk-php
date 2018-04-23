@@ -40,7 +40,8 @@ If you are using a composer to manage your dependencies, you can do the followin
 > php Setup.php
 
 4) Run a sample:
-```
+```php
+
  // Retrieve information about a chargeback
 $chargebackRetrieval = new cnp\sdk\ChargebackRetrieval();
 $response = $chargebackRetrieval->getChargebacksByDate("2018-01-01");
@@ -100,7 +101,8 @@ Running the above commands will create a configuration file in the lib directory
 
 4.) Run a sample: 
 
-```
+```php
+
  // Retrieve information about a chargeback
 $chargebackRetrieval = new cnp\sdk\ChargebackRetrieval();
 $response = $chargebackRetrieval->getChargebacksByDate("2018-01-01");
