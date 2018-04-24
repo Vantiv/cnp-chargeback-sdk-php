@@ -38,6 +38,15 @@ class ChargebackRetrieval
         $this->communication = new Communication($treeResponse, $overrides);
     }
 
+    public function setCommunication($communication)
+    {
+        $this->communication = $communication;
+    }
+
+    ////////////////////////////////////////////////////////////////////
+    //                    ChargebackRetrieval API:                    //
+    ////////////////////////////////////////////////////////////////////
+
     public function getChargebackByCaseId($caseId)
     {
         $request_url = $this->config['url'] . "/" . $caseId;
@@ -52,6 +61,7 @@ class ChargebackRetrieval
 
     public function getChargebacksByFinancialImpact($date, $impact)
     {
+        $impact = $impact ? "true" : "false";
         return $this->getRetrievalResponse(array('date' => $date, 'financialOnly' => $impact));
     }
 
@@ -75,6 +85,8 @@ class ChargebackRetrieval
     {
         return $this->getRetrievalResponse(array('arn' => $arn));
     }
+
+    ////////////////////////////////////////////////////////////////////
 
     private function getRetrievalResponse($parameters)
     {

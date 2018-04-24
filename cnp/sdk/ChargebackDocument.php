@@ -20,6 +20,10 @@ class ChargebackDocument
         $this->communication = new Communication($treeResponse, $overrides);
     }
 
+    ////////////////////////////////////////////////////////////////////
+    //                    ChargebackDocument API:                     //
+    ////////////////////////////////////////////////////////////////////
+
     public function uploadDocument($caseId, $filepath)
     {
         $documentId = end(explode("/", $filepath));

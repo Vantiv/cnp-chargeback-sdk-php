@@ -38,6 +38,10 @@ class ChargebackUpdate
         $this->communication = new Communication($treeResponse, $overrides);
     }
 
+    ////////////////////////////////////////////////////////////////////
+    //                    ChargebackUpdate API:                       //
+    ////////////////////////////////////////////////////////////////////
+
     public function assignCaseToUser($caseId, $userId, $note)
     {
         $hash = array('activityType' => 'ASSIGN_TO_USER',
@@ -96,6 +100,8 @@ class ChargebackUpdate
         $requestBody = Utils::generateChargebackUpdateRequest($hash);
         return $this->getUpdateResponse($caseId, $requestBody);
     }
+
+    ////////////////////////////////////////////////////////////////////
 
     private function getUpdateResponse($caseId, $requestBody)
     {
