@@ -50,42 +50,69 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     public function testChargebackUploadDocument()
     {
         $response = $this->chargebackDocument->uploadDocument(123000, $this->documentToUpload);
-        //assert statements
+        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
+        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
+        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
+        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $this->assertEquals('000', $responseCode);
+        $this->assertEquals('Success', $responseMessage);
+        $this->assertEquals('test.jpg', $documentId);
+        $this->assertEquals('123000', $caseId);
     }
 
     public function testChargebackRetrieveDocument()
     {
         $testFile = getcwd() . "/test.tiff";
-        $response = $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", "test.tiff");
-        //assert statements
+        $response = $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", $testFile);
         $this->assertTrue(file_exists($testFile));
-
         unlink($testFile);
     }
 
     public function testChargebackReplaceDocument()
     {
         $response = $this->chargebackDocument->replaceDocument(123000, "doc.pdf", $this->documentToUpload);
-        //assert statements
+        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
+        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
+        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
+        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $this->assertEquals('000', $responseCode);
+        $this->assertEquals('Success', $responseMessage);
+        $this->assertEquals('doc.pdf', $documentId);
+        $this->assertEquals('123000', $caseId);
     }
 
     public function testChargebackDeleteDocument()
     {
         $response = $this->chargebackDocument->removeDocument(123000, "logo.tiff");
-        //assert statements
+        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
+        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
+        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
+        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $this->assertEquals('000', $responseCode);
+        $this->assertEquals('Success', $responseMessage);
+        $this->assertEquals('logo.tiff', $documentId);
+        $this->assertEquals('123000', $caseId);
     }
 
     public function testChargebackListDocuments()
     {
-        $response = $this->chargebackDocument->listDocuments(12300);
-        //assert statements
+        $response = $this->chargebackDocument->listDocuments(123000);
+        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
+        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
+        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
+        $documentId1 = $response->getElementsByTagName("documentId")->item(1)->nodeValue;
+        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $this->assertEquals('000', $responseCode);
+        $this->assertEquals('Success', $responseMessage);
+        $this->assertEquals('123000', $caseId);
+        $this->assertEquals("logo.tiff", $documentId);
+        $this->assertEquals("doc.tiff", $documentId1);
     }
 
-    public static function createTestFile($filepath){
+    public static function createTestFile($filepath)
+    {
         $file = fopen($filepath, "w");
         fwrite($file, "test file");
         fclose($file);
     }
-
-
 }
