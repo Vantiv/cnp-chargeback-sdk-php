@@ -26,6 +26,7 @@
 namespace cnp\sdk\Test\unit;
 
 use cnp\sdk\ChargebackDocument;
+use cnp\sdk\XmlParser;
 use cnp\sdk\Utils;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
@@ -61,10 +62,10 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpPostDocumentRequest')->will($this->returnValue($expectedResponse));
         $this->chargebackDocument->setCommunication($mock);
         $response = $this->chargebackDocument->uploadDocument(123000, $this->documentToUpload);
-        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
-        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
-        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
-        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $responseCode = XmlParser::getValueByTagName($response, "responseCode");
+        $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
+        $documentId = XmlParser::getValueByTagName($response, "documentId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertEquals('000', $responseCode);
         $this->assertEquals('Success', $responseMessage);
         $this->assertEquals('test.jpg', $documentId);
@@ -100,10 +101,10 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpPutDocumentRequest')->will($this->returnValue($expectedResponse));
         $this->chargebackDocument->setCommunication($mock);
         $response = $this->chargebackDocument->replaceDocument(123000, "doc.pdf", $this->documentToUpload);
-        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
-        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
-        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
-        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $responseCode = XmlParser::getValueByTagName($response, "responseCode");
+        $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
+        $documentId = XmlParser::getValueByTagName($response, "documentId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertEquals('000', $responseCode);
         $this->assertEquals('Success', $responseMessage);
         $this->assertEquals('test.jpg', $documentId);
@@ -124,10 +125,10 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpDeleteDocumentRequest')->will($this->returnValue($expectedResponse));
         $this->chargebackDocument->setCommunication($mock);
         $response = $this->chargebackDocument->removeDocument(123000, "logo.tiff");
-        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
-        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
-        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
-        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $responseCode = XmlParser::getValueByTagName($response, "responseCode");
+        $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
+        $documentId = XmlParser::getValueByTagName($response, "documentId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertEquals('000', $responseCode);
         $this->assertEquals('Success', $responseMessage);
         $this->assertEquals('logo.tiff', $documentId);
@@ -149,16 +150,15 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($expectedResponse));
         $this->chargebackDocument->setCommunication($mock);
         $response = $this->chargebackDocument->listDocuments(12300);
-        $responseCode = $response->getElementsByTagName("responseCode")->item(0)->nodeValue;
-        $responseMessage = $response->getElementsByTagName("responseMessage")->item(0)->nodeValue;
-        $documentId = $response->getElementsByTagName("documentId")->item(0)->nodeValue;
-        $documentId1 = $response->getElementsByTagName("documentId")->item(1)->nodeValue;
-        $caseId = $response->getElementsByTagName("caseId")->item(0)->nodeValue;
+        $responseCode = XmlParser::getValueByTagName($response, "responseCode");
+        $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
+        $documentId = XmlParser::getValueListByTagName($response, "documentId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertEquals('000', $responseCode);
         $this->assertEquals('Success', $responseMessage);
         $this->assertEquals('123000', $caseId);
-        $this->assertEquals("logo.tiff", $documentId);
-        $this->assertEquals("doc.tiff", $documentId1);
+        $this->assertContains("logo.tiff", $documentId);
+        $this->assertContains("doc.tiff", $documentId);
     }
 
     public static function createTestFile($filepath)
