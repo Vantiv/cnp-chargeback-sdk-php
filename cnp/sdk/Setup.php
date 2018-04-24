@@ -26,6 +26,12 @@
 namespace cnp\sdk;
 require_once realpath(dirname(__FILE__)) . '/UrlMapper.php';
 
+$urlList = array("sandbox" => "https://www.testvantivcnp.com/sandbox/new/sandbox/services/chargebacks",
+    "prelive" => "https://services.vantivprelive.com/services/chargebacks",
+    "postlive" => "https://services.vantivpostlive.com/services/chargebacks",
+    "producation" => "https://services.vantivcnp.com/services/chargebacks",
+    "other" => "You will be asked for all the values");
+
 function writeConfig($line, $handle)
 {
     foreach ($line as $keys => $values) {
@@ -41,7 +47,7 @@ function writeConfig($line, $handle)
     }
 }
 
-function initialize()
+function initialize($urlList)
 {
     $line = array();
 
@@ -54,15 +60,12 @@ function initialize()
         $line['password'] = formatConfigValue(STDIN);
         print "Please input your merchantId: ";
         $line['currency_merchant_map ']['DEFAULT'] = formatConfigValue(STDIN);
-        print "Please choose Cnp url from the following list (example: 'sandbox') or directly input another URL: \n" .
-            "sandbox => https://www.testvantivcnp.com/sandbox/communicator/online \n" .
-            "postlive => https://payments.vantivpostlive.com/vap/communicator/online \n" .
-            "transact-postlive => https://transact.vantivpostlive.com/vap/communicator/online \n" .
-            "production => https://payments.vantivcnp.com/vap/communicator/online \n" .
-            "production-transact => https://transact.vantivcnp.com/vap/communicator/online \n" .
-            "prelive => https://payments.vantivprelive.com/vap/communicator/online \n" .
-            "transact-prelive => https://transact.vantivprelive.com/vap/communicator/online" . PHP_EOL;
-        $url = UrlMapper::getUrl(trim(fgets(STDIN)));
+        print "Please choose Cnp url from the following list (example: 'sandbox') or directly input another URL: \n";
+        foreach ($urlList as $key => $value) {
+            print $key . " => " . $value . "\n";
+        }
+
+        $url = getUrl(trim(fgets(STDIN)), $urlList);
 
         $line['url'] = $url;
         print "Please input the proxy, if no proxy hit enter key: ";
@@ -84,4 +87,9 @@ function formatConfigValue($str)
     return "\"" . trim(fgets($str)) . "\"";
 }
 
-initialize();
+function getUrl($str, $urlList)
+{
+    return array_key_exists(strtolower($str), $urlList)? $urlList[$str] : $str;
+}
+
+initialize($urlList);

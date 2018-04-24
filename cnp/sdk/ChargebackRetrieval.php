@@ -57,8 +57,8 @@ class ChargebackRetrieval
 
     public function getActionableChargebacks($actionable)
     {
+        $actionable = $actionable ? "true" : "false";
         return $this->getRetrievalResponse(array('actionable' => $actionable));
-
     }
 
     public function getChargebacksbyToken($token)
