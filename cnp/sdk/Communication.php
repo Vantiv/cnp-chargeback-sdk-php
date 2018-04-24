@@ -67,13 +67,13 @@ class Communication
         $this->printToConsole("\nDocument saved at: ", $downloadPath);
     }
 
-    public function httpDeleteRequest($requestUrl)
+    public function httpDeleteDocumentRequest($requestUrl)
     {
         $this->printToConsole("\nDELETE request to: ", $requestUrl);
         return $this->execHttpRequest($requestUrl, "DELETE");
     }
 
-    public function httpPostRequest($requestUrl, $uploadFilepath)
+    public function httpPostDocumentRequest($requestUrl, $uploadFilepath)
     {
         $this->printToConsole("\nPOST request to: ", $requestUrl);
         $this->printToConsole("\nFile: ", $uploadFilepath);

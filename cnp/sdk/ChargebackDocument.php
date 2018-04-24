@@ -20,33 +20,38 @@ class ChargebackDocument
         $this->communication = new Communication($treeResponse, $overrides);
     }
 
+    public function setCommunication($communication)
+    {
+        $this->communication = $communication;
+    }
+
     ////////////////////////////////////////////////////////////////////
     //                    ChargebackDocument API:                     //
     ////////////////////////////////////////////////////////////////////
 
-    public function uploadDocument($caseId, $filepath)
+    public function uploadDocument($caseId, $uploadFilepath)
     {
-        $documentId = end(explode("/", $filepath));
+        $documentId = end(explode("/", $uploadFilepath));
         $requestUrl = $this->config['url'] . "/upload/" . $caseId . "/" . $documentId;
-        return $this->communication->httpPostRequest($requestUrl, $filepath);
+        return $this->communication->httpPostDocumentRequest($requestUrl, $uploadFilepath);
     }
 
     public function retrieveDocument($caseId, $documentId, $downloadPath)
     {
         $requestUrl = $this->config['url'] . "/retrieve/" . $caseId . "/" . $documentId;
-        return $this->communication->httpGetDocumentRequest($requestUrl, $downloadPath);
+        $this->communication->httpGetDocumentRequest($requestUrl, $downloadPath);
     }
 
-    public function replaceDocument($caseId, $documentId, $filepath)
+    public function replaceDocument($caseId, $documentId, $uploadFilepath)
     {
         $requestUrl = $this->config['url'] . "/replace/" . $caseId . "/" . $documentId;
-        return $this->communication->httpPutDocumentRequest($requestUrl, $filepath);
+        return $this->communication->httpPutDocumentRequest($requestUrl, $uploadFilepath);
     }
 
     public function removeDocument($caseId, $documentId)
     {
         $requestUrl = $this->config['url'] . "/remove/" . $caseId . "/" . $documentId;
-        return $this->communication->httpDeleteRequest($requestUrl);
+        return $this->communication->httpDeleteDocumentRequest($requestUrl);
 
     }
 

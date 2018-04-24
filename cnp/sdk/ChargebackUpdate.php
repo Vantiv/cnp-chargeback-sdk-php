@@ -38,6 +38,11 @@ class ChargebackUpdate
         $this->communication = new Communication($treeResponse, $overrides);
     }
 
+    public function setCommunication($communication)
+    {
+        $this->communication = $communication;
+    }
+
     ////////////////////////////////////////////////////////////////////
     //                    ChargebackUpdate API:                       //
     ////////////////////////////////////////////////////////////////////
