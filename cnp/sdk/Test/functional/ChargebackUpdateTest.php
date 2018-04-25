@@ -25,8 +25,8 @@
 
 namespace cnp\sdk\Test\functional;
 
-use cnp\sdk\ChargebackRetrieval;
-use cnp\sdk\Utils;
+use cnp\sdk\ChargebackUpdate;
+use cnp\sdk\XmlParser;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
 
@@ -36,54 +36,68 @@ class ChargebackUpdateTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->chargebackUpdate = new ChargebackRetrieval();
+        $this->chargebackUpdate = new ChargebackUpdate();
     }
 
     public function testAssignCaseToUser()
     {
         $response = $this->chargebackUpdate->assignCaseToUser("1234000", "User0", "Note");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $this->assertRegExp('/\d+/', $transactionId);
     }
 
     public function testAddNoteToCase()
     {
         $response = $this->chargebackUpdate->addNoteToCase("1234000", "Note");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $this->assertRegExp('/\d+/', $transactionId);
     }
 
     public function testAssumeLiability()
     {
         $response = $this->chargebackUpdate->assumeLiability("1234000", "Note");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $this->assertRegExp('/\d+/', $transactionId);
     }
 
     public function testRepresentCaseFull()
     {
         $response = $this->chargebackUpdate->representCase("1234000", "Note");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $this->assertRegExp('/\d+/', $transactionId);
     }
 
     public function testRepresentCase()
     {
         $response = $this->chargebackUpdate->representCase("1234000", "Note", 1000);
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $this->assertRegExp('/\d+/', $transactionId);
     }
 
     public function testRespondToRetrievalRequest()
     {
         $response = $this->chargebackUpdate->respondToRetrievalRequest("1234000", "Note");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $this->assertRegExp('/\d+/', $transactionId);
     }
     
     public function testRequestArbitration()
     {
         $response = $this->chargebackUpdate->requestArbitration("1234000", "Note");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $this->assertRegExp('/\d+/', $transactionId);
     }
 
     public function testErrorResponse()
     {
-        $response = $this->chargebackUpdate->addNoteToCase("1234404", "Note");
-        //expect exception
+        try
+        {
+            $response = $this->chargebackUpdate->addNoteToCase("1234404", "Note");
+        }
+        catch(\cnp\sdk\ChargebackException $e)
+        {
+            $this->assertEquals($e->getMessage(),"Could not find requested object.");
+            $this->assertEquals($e->getCode(),404);
+        }
     }
 }
