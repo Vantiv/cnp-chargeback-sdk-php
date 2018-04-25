@@ -26,7 +26,7 @@
 namespace cnp\sdk\Test\functional;
 
 use cnp\sdk\ChargebackRetrieval;
-use cnp\sdk\Utils;
+use cnp\sdk\XmlParser;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
 
@@ -42,48 +42,83 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
     public function testChargebackByDate()
     {
         $response = $this->chargebackRetrieval->getChargebacksByDate("2018-01-01");
-        //assert statements
-    }
-
-    public function testChargebackByCaseId()
-    {
-        $response = $this->chargebackRetrieval->getChargebackByCaseId("123");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
     }
 
     public function testChargebacksByFinancialImpact()
     {
         $response = $this->chargebackRetrieval->getChargebacksByFinancialImpact("2018-01-01", true);
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
     }
 
     public function testChargebacksActionable()
     {
         $response = $this->chargebackRetrieval->getActionableChargebacks(true);
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+    }
+
+    public function testChargebackByCaseId()
+    {
+        $response = $this->chargebackRetrieval->getChargebackByCaseId("1333078000");
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertRegExp('/1333078000/', $caseId);
     }
 
     public function testChargebacksbyToken()
     {
-        $response = $this->chargebackRetrieval->getChargebacksByToken("100000");
-        //assert statements
+        $response = $this->chargebackRetrieval->getChargebacksByToken("1000000");
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $token = XmlParser::getValueByTagName($response, "token");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertRegExp('/1000000/', $token);
     }
 
     public function testChargebacksByCardNumber()
     {
         $response = $this->chargebackRetrieval->getChargebacksByCardNumber("1111000011110000", "1018");
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $cardNumberLast4 = XmlParser::getValueByTagName($response, "cardNumberLast4");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertRegExp('/0000/', $cardNumberLast4);
     }
 
     public function testChargebacksByArn()
     {
-        $response = $this->chargebackRetrieval->getChargebacksByArn("1000000000");
-        //assert statements
+        $response = $this->chargebackRetrieval->getChargebacksByArn("1111111111");
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $acquirerReferenceNumber = XmlParser::getValueByTagName($response,"acquirerReferenceNumber");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertRegExp('/1111111111/', $acquirerReferenceNumber);
     }
 
     public function testErrorResponse()
     {
-        $response = $this->chargebackRetrieval->getChargebackByCaseId("123");
-        //expect exception
+        try
+        {
+            $response = $this->chargebackRetrieval->getChargebackByCaseId("404");
+        }
+        catch(\cnp\sdk\ChargebackException $e)
+        {
+            $this->assertEquals($e->getMessage(),"Could not find requested object.");
+            $this->assertEquals($e->getCode(),404);
+        }
     }
 }

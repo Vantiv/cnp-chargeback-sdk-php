@@ -24,9 +24,8 @@
 */
 
 namespace cnp\sdk;
-require_once realpath(dirname(__FILE__)) . '/UrlMapper.php';
 
-$urlList = array("sandbox" => "https://www.testvantivcnp.com/sandbox/new/sandbox/services/chargebacks",
+$urlList = array("sandbox" => "https://www.testvantivcnp.com/sandbox/new/services/chargebacks",
     "prelive" => "https://services.vantivprelive.com/services/chargebacks",
     "postlive" => "https://services.vantivpostlive.com/services/chargebacks",
     "producation" => "https://services.vantivcnp.com/services/chargebacks",
