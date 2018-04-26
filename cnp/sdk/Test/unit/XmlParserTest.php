@@ -53,10 +53,11 @@ class XmlParserTest extends \PHPUnit_Framework_TestCase
     {
         $orig = '<foo>bar<test>test1</test><test>test2</test></foo>';
         $dom = XmlParser::domParser($orig);
-        $domnodelist = XmlParser::getNodeByTagName($dom, 'test');
+        $domnodelist = XmlParser::getNodeListByTagName($dom, 'test');
         $this->assertTrue($domnodelist instanceof \DOMNodeList);
-        $this->assertEquals('test', $domnodelist->item(0)->nodeValue);
-        $this->assertEquals(1, $domnodelist->count());
+        $this->assertEquals(2, $domnodelist->length);
+        $this->assertEquals('test1', $domnodelist->item(0)->nodeValue);
+        $this->assertEquals('test2', $domnodelist->item(1)->nodeValue);
     }
 
     public function test_getValueByTagName()
@@ -74,6 +75,8 @@ class XmlParserTest extends \PHPUnit_Framework_TestCase
         $dom = XmlParser::domParser($orig);
         $domvaluelist = XmlParser::getValueListByTagName($dom, 'test');
         $this->assertTrue(is_array($domvaluelist));
-        $this->assertContains('test', $domvaluelist);
+        $this->assertEquals(2, sizeof($domvaluelist));
+        $this->assertContains('test1', $domvaluelist);
+        $this->assertContains('test2', $domvaluelist);
     }
 }
