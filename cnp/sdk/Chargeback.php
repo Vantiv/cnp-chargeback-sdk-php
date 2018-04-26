@@ -28,4 +28,4 @@ namespace cnp\sdk;
 define('CURRENT_XML_VERSION', '2.1');
 define('CURRENT_SDK_VERSION', 'PHP;2.1.0');
 define('CNP_CONFIG_LIST', 'username,password,merchantId,timeout,proxy,version,url,print_xml,neuter_xml');
-
+define('CNP_CONTENT_TYPE', 'application/com.vantivcnp.services-v2+xml');

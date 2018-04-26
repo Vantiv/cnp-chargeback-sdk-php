@@ -39,7 +39,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     {
         $this->chargebackDocument = new ChargebackDocument();
         $this->documentToUpload = getcwd() . "/test.jpg";
-        self::createTestFile($this->documentToUpload);
+        self::createTestFile($this->documentToUpload, 1024);
     }
 
     public function tearDown()
@@ -60,12 +60,20 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('123000', $caseId);
     }
 
+    public function testChargebackRetrieveDocumentAsBytes()
+    {
+        $response = $this->chargebackDocument->retrieveDocumentAsString(123000, "logo.tiff");
+        $this->assertTrue(strlen($response) != NULL);
+        $this->assertTrue(strlen($response) == 30128);
+    }
+
     public function testChargebackRetrieveDocument()
     {
-        $testFile = getcwd() . "/test.tiff";
-        $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", $testFile);
-        $this->assertTrue(file_exists($testFile));
-        unlink($testFile);
+        $filename = "logo.tiff";
+        $this->chargebackDocument->retrieveDocumentToPath(123000, $filename, getcwd());
+        $this->assertTrue(file_exists(getcwd() . "/" . $filename));
+        $this->assertTrue(filesize(getcwd() . "/" . $filename) != 0);
+        unlink(getcwd() . "/" . $filename);
     }
 
     public function testChargebackReplaceDocument()
@@ -108,27 +116,41 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $this->assertContains("doc.tiff", $documentId);
     }
 
-    public function testErrorResponse()
+    public function testErrorResponse001()
     {
         $response = $this->chargebackDocument->uploadDocument(123001, $this->documentToUpload);
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
         $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
         $this->assertEquals('001', $responseCode);
         $this->assertEquals('Invalid Merchant', $responseMessage);
+    }
 
+    public function testErrorResponse009()
+    {
         try {
-            $this->chargebackDocument->retrieveDocument("1234404", "logo.tiff", "test.tiff");
-            unlink("test.tiff");
+            $response = $this->chargebackDocument->retrieveDocumentAsString("1234009", "logo.tiff");
+            echo $response;
+        } catch (\cnp\sdk\ChargebackException $e) {
+            $this->assertEquals($e->getMessage(), "Document Not Found");
+            $this->assertEquals($e->getCode(), "009");
+        }
+    }
+
+    public function testErrorResponse404()
+    {
+        try {
+            $response = $this->chargebackDocument->retrieveDocumentAsString("1234404", "logo.tiff");
         } catch (\cnp\sdk\ChargebackException $e) {
             $this->assertEquals($e->getMessage(), "Could not find requested object.");
             $this->assertEquals($e->getCode(), 404);
         }
     }
 
-    public static function createTestFile($filepath)
+    public static function createTestFile($filepath, $bytes)
     {
         $file = fopen($filepath, "w");
-        fwrite($file, "test file");
+        $data = str_repeat(rand(0, 9), $bytes);
+        fwrite($file, $data);
         fclose($file);
     }
 }

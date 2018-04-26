@@ -32,6 +32,8 @@ class ChargebackUpdate
     private $config;
     private $communication;
 
+    const SERVICE_ROUTE = "/chargebacks";
+
     public function __construct($treeResponse = false, $overrides = array())
     {
         $this->config = Utils::getConfig($overrides);
@@ -110,7 +112,7 @@ class ChargebackUpdate
 
     private function getUpdateResponse($caseId, $requestBody)
     {
-        $requestUrl = $this->config['url'] . "/" . $caseId;
-        return $this->communication->httpPutRequest($requestUrl, $requestBody);
+        $urlSuffix = self::SERVICE_ROUTE . "/" . $caseId;
+        return $this->communication->httpPutRequest($urlSuffix, $requestBody);
     }
 }

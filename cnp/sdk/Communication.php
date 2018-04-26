@@ -26,135 +26,158 @@
 namespace cnp\sdk;
 class Communication
 {
-    const CONTENT_TYPE_HEADER = "Content-type: application/com.vantivcnp.services-v2+xml";
-    const ACCEPT_HEADER = "Accept: application/com.vantivcnp.services-v2+xml";
-
     private $config;
+    private $url;
     private $useSimpleXml;
+    private $printXml;
+    private $neuterXml;
 
     public function __construct($treeResponse = false, $overrides = array())
     {
         $this->useSimpleXml = $treeResponse;
         $this->config = Utils::getConfig($overrides);
+        $this->url = $this->config['url'];
     }
 
-    public function httpGetRequest($requestUrl)
+    public function httpGetRequest($urlSuffix)
     {
-        $this->printToConsole("\nGET request to: ", $requestUrl);
-        $headers = array(self::CONTENT_TYPE_HEADER, self::ACCEPT_HEADER);
-        return $this->execHttpRequest($requestUrl, "GET", $headers);
+        $requestUrl = $this->url . $urlSuffix;
+        Utils::printToConsole("\nGET request to: ", $requestUrl, $this->printXml, $this->neuterXml);
+        $headers = array("Content-Type: " . CNP_CONTENT_TYPE, "Accept: " . CNP_CONTENT_TYPE);
+        return $this->getHttpResponse($requestUrl, "GET", $headers);
 
     }
 
-    public function httpPutRequest($requestUrl, $requestBody)
+    public function httpPutRequest($urlSuffix, $requestBody)
     {
-        $this->printToConsole("\nPUT request to: ", $requestUrl);
-        $headers = array(self::CONTENT_TYPE_HEADER, self::ACCEPT_HEADER);
-        return $this->execHttpRequest($requestUrl, "PUT", $headers, $requestBody);
+        $requestUrl = $this->url . $urlSuffix;
+        Utils::printToConsole("\nPUT request to: ", $requestUrl, $this->printXml, $this->neuterXml);
+        $headers = array("Content-Type: " . CNP_CONTENT_TYPE, "Accept: " . CNP_CONTENT_TYPE);
+        Utils::printToConsole("\nRequest body: ", $requestBody, $this->printXml, $this->neuterXml);
+        $options = array(CURLOPT_POSTFIELDS => $requestBody);
+        return $this->getHttpResponse($requestUrl, "PUT", $headers, $options);
     }
 
-    public function httpGetDocumentRequest($requestUrl, $downloadPath)
+    public function httpGetDocumentRequest($urlSuffix)
     {
-        $this->printToConsole("\nGET request to: ", $requestUrl);
-        $headers = array($this->generateAuthHeader());
-        $file = fopen($downloadPath, 'w+');
-        $ch = $this->generateBaseCurlHandler($requestUrl, "GET", $headers);
-        $httpResponse = curl_exec($ch);
-        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $this->validateResponse($httpResponse, $responseCode);
+        $requestUrl = $this->url . $urlSuffix;
+        Utils::printToConsole("\nGET request to: ", $requestUrl, $this->printXml, $this->neuterXml);
+        $responseArray = $this->execHttpRequest($requestUrl, "GET");
+        $response = $responseArray['response'];
+        $statusCode = $responseArray['statusCode'];
+        $contentType = $responseArray['contentType'];
+        $this->validateDocumentResponse($response, $statusCode, $contentType);
+        return $response;
+    }
+
+    public function httpDeleteDocumentRequest($urlSuffix)
+    {
+        $requestUrl = $this->url . $urlSuffix;
+        Utils::printToConsole("\nDELETE request to: ", $requestUrl, $this->printXml, $this->neuterXml);
+        return $this->getHttpResponse($requestUrl, "DELETE");
+    }
+
+    public function httpPostDocumentRequest($urlSuffix, $uploadFilepath)
+    {
+        $requestUrl = $this->url . $urlSuffix;
+        Utils::printToConsole("\nPOST request to: ", $requestUrl, $this->printXml, $this->neuterXml);
+        Utils::printToConsole("\nFile: ", $uploadFilepath, $this->printXml, $this->neuterXml);
+        $headers = array("Content-Type: " . mime_content_type($uploadFilepath));
+        $file = fopen($uploadFilepath, 'r');
+        $options = array(CURLOPT_INFILE => $file);
+        $response = $this->getHttpResponse($requestUrl, "POST", $headers, $options);
         fclose($file);
-        curl_close($ch);
-        $this->printToConsole("\nDocument saved at: ", $downloadPath);
+        return $response;
     }
 
-    public function httpDeleteDocumentRequest($requestUrl)
+    public function httpPutDocumentRequest($urlSuffix, $uploadFilepath)
     {
-        $this->printToConsole("\nDELETE request to: ", $requestUrl);
-        return $this->execHttpRequest($requestUrl, "DELETE");
-    }
-
-    public function httpPostDocumentRequest($requestUrl, $uploadFilepath)
-    {
-        $this->printToConsole("\nPOST request to: ", $requestUrl);
-        $this->printToConsole("\nFile: ", $uploadFilepath);
+        $requestUrl = $this->url . $urlSuffix;
+        Utils::printToConsole("\nPUT request to: ", $requestUrl, $this->printXml, $this->neuterXml);
+        Utils::printToConsole("\nFile: ", $uploadFilepath, $this->printXml, $this->neuterXml);
         $headers = array("Content-Type: " . mime_content_type($uploadFilepath));
-        return $this->execHttpRequest($requestUrl, "POST", $headers, NULL, $uploadFilepath);
-
+        $file = fopen($uploadFilepath, 'r');
+        $options = array(CURLOPT_INFILE => $file);
+        $response = $this->getHttpResponse($requestUrl, "PUT", $headers, $options);
+        fclose($file);
+        return $response;
     }
 
-    public function httpPutDocumentRequest($requestUrl, $uploadFilepath)
-    {
-        $this->printToConsole("\nPUT request to: ", $requestUrl);
-        $this->printToConsole("\nFile: ", $uploadFilepath);
-        $headers = array("Content-Type: " . mime_content_type($uploadFilepath));
-        return $this->execHttpRequest($requestUrl, "PUT", $headers, NULL, $uploadFilepath);
+    private function getHttpResponse($requestUrl, $requestType, $headers = array(), $options = array()){
+        $responseArray = $this->execHttpRequest($requestUrl, $requestType, $headers, $options);
+        $response = $responseArray['response'];
+        $statusCode = $responseArray['statusCode'];
+        $contentType = $responseArray['contentType'];
+        $this->validateResponse($response, $statusCode, $contentType);
+        Utils::printToConsole("\nResponse: ", $response, $this->printXml, $this->neuterXml);
+        return Utils::generateResponseObject($response, $this->useSimpleXml);
     }
 
-    private function execHttpRequest($requestUrl, $requestType, $headers = array(), $requestBody = NULL, $uploadFilepath = NULL)
+    private function execHttpRequest($requestUrl, $requestType, $headers = array(), $options = array())
     {
-        $auth_header = $this->generateAuthHeader();
-        array_push($headers, $auth_header);
-
-        $ch = $this->generateBaseCurlHandler($requestUrl, $requestType, $headers);
-        if ($requestBody != NULL) {
-            $this->printToConsole("\nRequest body: ", $requestBody);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
-        }
-        if ($uploadFilepath != NULL) {
-            $file = fopen($uploadFilepath, 'r');
-            curl_setopt($ch, CURLOPT_INFILE, $file);
-            fclose($file);
-        }
-
-        $httpResponse = curl_exec($ch);
-        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $this->validateResponse($httpResponse, $responseCode);
+        $ch = $this->generateBaseCurlHandler($requestUrl, $requestType, $headers, $options);
+        $response = curl_exec($ch);
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
-        $this->printToConsole("\nResponse: ", $httpResponse);
-        return Utils::generateResponseObject($httpResponse, $this->useSimpleXml);
+        return array('response' => $response, 'statusCode' => $statusCode, 'contentType' => $contentType);
     }
 
-    private function validateResponse($httpResponse, $statusCode)
+    private function validateResponse($response, $statusCode, $contentType)
     {
-        if (!$httpResponse) {
+        if (!$response) {
             throw new ChargebackException("There was an exception while fetching the response.");
         } else if ($statusCode != 200 || $statusCode != "200") {
-            $this->printToConsole("\nError: ", $httpResponse);
-            $errorResponse = Utils::generateResponseObject($httpResponse, true);
+            Utils::printToConsole("\nError: ", $response, $this->printXml, $this->neuterXml);
+            $errorResponse = Utils::generateResponseObject($response, true);
             throw new ChargebackException($errorResponse->errors->error, $statusCode);
         }
     }
 
-    private function generateBaseCurlHandler($requestUrl, $type, $headers)
+    private function validateDocumentResponse($httpResponse, $statusCode, $contentType)
     {
+        if (!$httpResponse) {
+            throw new ChargebackException("There was an exception while fetching the response.");
+        } else if ($statusCode != 200 || $statusCode != "200") {
+            Utils::printToConsole("\nError: ", $httpResponse, $this->printXml, $this->neuterXml);
+            $errorResponse = Utils::generateResponseObject($httpResponse, true);
+            throw new ChargebackException($errorResponse->errors->error, $statusCode);
+        } else if ($contentType == CNP_CONTENT_TYPE) {
+            $errorResponse = Utils::generateResponseObject($httpResponse, true);
+            throw new ChargebackException($httpResponse->responseMessage, $httpResponse->responseCode);
+        }
+
+        //check content type
+    }
+
+    private function generateBaseCurlHandler($requestUrl, $type, $headers, $options = array())
+    {
+        $auth_header = $this->generateAuthHeader();
+        array_push($headers, $auth_header);
         $proxy = $this->config['proxy'];
         $timeout = $this->config['timeout'];
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_PROXY, $proxy);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $type);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_URL, $requestUrl);
-        curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+        $defaultOptions = array(
+            CURLOPT_PROXY => $proxy,
+            CURLOPT_CUSTOMREQUEST => $type,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_URL => $requestUrl,
+            CURLOPT_HTTPPROXYTUNNEL => true,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSLVERSION => 6);
+
+        curl_setopt_array($ch, $defaultOptions + $options);
         return $ch;
 
     }
 
-    public function generateAuthHeader()
+    private function generateAuthHeader()
     {
         $username = $this->config['username'];
         $password = $this->config['password'];
         return "Authorization: Basic " . base64_encode($username . ":" . $password);
-    }
-
-    private function printToConsole($prefixMessage, $message)
-    {
-        if ((int)$this->config['print_xml']) {
-            echo "\n" . $prefixMessage . $message;
-        }
     }
 }

@@ -32,6 +32,8 @@ class ChargebackRetrieval
     private $config;
     private $communication;
 
+    const SERVICE_ROUTE = "/chargebacks";
+
     public function __construct($treeResponse = false, $overrides = array())
     {
         $this->config = Utils::getConfig($overrides);
@@ -49,8 +51,8 @@ class ChargebackRetrieval
 
     public function getChargebackByCaseId($caseId)
     {
-        $request_url = $this->config['url'] . "/" . $caseId;
-        return $this->communication->httpGetRequest($request_url);
+        $urlSuffix = self::SERVICE_ROUTE . "/" . $caseId;
+        return $this->communication->httpGetRequest($urlSuffix);
     }
 
     public function getChargebacksByDate($date)
@@ -90,12 +92,12 @@ class ChargebackRetrieval
 
     private function getRetrievalResponse($parameters)
     {
-        $request_url = $this->config['url'];
+        $urlSuffix = self::SERVICE_ROUTE;
         $prefix = "?";
         foreach ($parameters as $key => $value) {
-            $request_url .= $prefix . $key . "=" . $value;
+            $urlSuffix .= $prefix . $key . "=" . $value;
             $prefix = "&";
         }
-        return $this->communication->httpGetRequest($request_url);
+        return $this->communication->httpGetRequest($urlSuffix);
     }
 }

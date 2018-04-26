@@ -72,18 +72,28 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('123000', $caseId);
     }
 
-    public function testChargebackRetrieveDocument()
+    public function testChargebackRetrieveDocumentAsString()
     {
-        $testFile = getcwd() . "/test.tiff";
+        $mockResponse = str_repeat(rand(0, 9), 1024);
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetDocumentRequest')->will($this->returnCallback(function () {
-            $file = fopen(getcwd() . "/test.tiff", "w");
-            fwrite($file, "test file");
-            fclose($file);
-        }));
+        $mock->expects($this->once())->method('httpGetDocumentRequest')->will($this->returnValue($mockResponse));
         $this->chargebackDocument->setCommunication($mock);
-        $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", "test.tiff");
+        $response = $this->chargebackDocument->retrieveDocumentAsString(123000, "logo.tiff");
+        $this->assertTrue($response != NULL);
+        $this->assertTrue(strlen($response) == 1024);
+    }
+
+    public function testChargebackRetrieveDocumentToPath()
+    {
+        $testFile = getcwd() . "/logo.tiff";
+        $mockResponse = str_repeat(rand(0, 9), 1024);
+        $mock = $this->getMock('cnp\sdk\Communication');
+        $mock->expects($this->once())->method('httpGetDocumentRequest')->will($this->returnValue($mockResponse));
+        $this->chargebackDocument->setCommunication($mock);
+        $this->chargebackDocument->retrieveDocumentToPath(123000, "logo.tiff", getcwd());
         $this->assertTrue(file_exists($testFile));
+        echo "filesize" . filesize($testFile);
+        $this->assertTrue(filesize($testFile) == 1024);
         unlink($testFile);
     }
 

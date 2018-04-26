@@ -25,10 +25,10 @@
 
 namespace cnp\sdk;
 
-$urlList = array("sandbox" => "https://www.testvantivcnp.com/sandbox/new/services/chargebacks",
-    "prelive" => "https://services.vantivprelive.com/services/chargebacks",
-    "postlive" => "https://services.vantivpostlive.com/services/chargebacks",
-    "producation" => "https://services.vantivcnp.com/services/chargebacks",
+$urlList = array("sandbox" => "https://www.testvantivcnp.com/sandbox/new/",
+    "prelive" => "https://services.vantivprelive.com/",
+    "postlive" => "https://services.vantivpostlive.com/",
+    "producation" => "https://services.vantivcnp.com/",
     "other" => "You will be asked for all the values");
 
 function writeConfig($line, $handle)

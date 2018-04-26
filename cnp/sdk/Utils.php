@@ -87,4 +87,21 @@ class Utils
         }
         return $xml->asXML();
     }
+
+    public static function printToConsole($prefixMessage, $message, $printXml, $neuterXml = false)
+    {
+        if($neuterXml)
+        {
+            $message = self::neuterString($message);
+        }
+
+        if ($printXml) {
+            echo "\n" . $prefixMessage . $message;
+        }
+    }
+
+    public static function neuterString($str)
+    {
+        return $str;
+    }
 }

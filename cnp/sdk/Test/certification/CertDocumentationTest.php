@@ -159,7 +159,7 @@ class CertDocumentationTest extends \PHPUnit_Framework_TestCase
         $caseId = $this->merchantId . "004";
 
         $documentMaxSize = getcwd() . "maxsize.tif";
-        ChargebackDocumentTest::createTestFile($documentMaxSize);
+        ChargebackDocumentTest::createTestFile($documentMaxSize, 1024);
 
         $response = $this->chargebackDocument->uploadDocument($caseId, $documentMaxSize);
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
@@ -167,8 +167,7 @@ class CertDocumentationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('005', $responseCode);
         $this->assertEquals('Document already exists', $responseMessage);
 
-        $data = str_repeat(rand(0, 9), 2100000);
-        file_put_contents($documentMaxSize, $data);
+        ChargebackDocumentTest::createTestFile($documentMaxSize, 2100000);
         $response = $this->chargebackDocument->uploadDocument($caseId, $documentMaxSize);
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
         $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
