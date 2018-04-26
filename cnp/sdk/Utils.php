@@ -28,7 +28,7 @@ require_once realpath(dirname(__FILE__)) . '/Chargeback.php';
 
 class Utils
 {
-    public static function getConfig($data, $type = NULL)
+    public static function getConfig($data = array())
     {
         $config_array = null;
 
