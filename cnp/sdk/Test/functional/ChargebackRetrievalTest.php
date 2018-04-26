@@ -73,7 +73,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
-        $this->assertRegExp('/1333078000/', $caseId);
+        $this->assertEquals('1333078000', $caseId);
     }
 
     public function testChargebacksbyToken()
@@ -84,7 +84,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $token = XmlParser::getValueByTagName($response, "token");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
-        $this->assertRegExp('/1000000/', $token);
+        $this->assertEquals('1000000', $token);
     }
 
     public function testChargebacksByCardNumber()
@@ -95,7 +95,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $cardNumberLast4 = XmlParser::getValueByTagName($response, "cardNumberLast4");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
-        $this->assertRegExp('/0000/', $cardNumberLast4);
+        $this->assertEquals('0000', $cardNumberLast4);
     }
 
     public function testChargebacksByArn()
@@ -106,7 +106,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $acquirerReferenceNumber = XmlParser::getValueByTagName($response,"acquirerReferenceNumber");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
-        $this->assertRegExp('/1111111111/', $acquirerReferenceNumber);
+        $this->assertEquals('1111111111', $acquirerReferenceNumber);
     }
 
     public function testErrorResponse()

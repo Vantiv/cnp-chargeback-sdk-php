@@ -27,6 +27,7 @@ namespace cnp\sdk\Test\functional;
 
 use cnp\sdk\ChargebackRetrieval;
 use cnp\sdk\Utils;
+use cnp\sdk\XmlParser;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
 
@@ -42,7 +43,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
                                 <chargebackRetrievalResponse xmlns="http://www.vantivcnp.com/chargebacks">
                                   <transactionId>1234567890</transactionId>
                                   <chargebackCase>
-                                    <caseId>123</caseId>
+                                    <caseId>1333078000</caseId>
                                     <merchantId>1234567</merchantId>
                                     <dayIssuedByBank>2018-01-01</dayIssuedByBank>
                                     <dateReceivedByVantivCnp>2018-01-01</dateReceivedByVantivCnp>
@@ -61,12 +62,12 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
                                     <reasonCodeDescription>No Cardholder Authorization</reasonCodeDescription>
                                     <currentQueue>Network Assumed</currentQueue>
                                     <fraudNotificationStatus>AFTER</fraudNotificationStatus>
-                                    <acquirerReferenceNumber>1000000000</acquirerReferenceNumber>
+                                    <acquirerReferenceNumber>1111111111</acquirerReferenceNumber>
                                     <chargebackReferenceNumber>00143789</chargebackReferenceNumber>
                                     <merchantTxnId>600001</merchantTxnId>
                                     <fraudNotificationDate>2018-01-01</fraudNotificationDate>
                                     <bin>532499</bin>
-                                    <token>100000</token>
+                                    <token>1000000</token>
                                     <historicalWinPercentage>80</historicalWinPercentage>
                                     <customerId>123abc</customerId>
                                     <paymentAmount>3099</paymentAmount>
@@ -92,8 +93,10 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByDate("2018-01-01");
-        //assert statements
-    }
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);    }
 
     public function testChargebacksByFinancialImpact()
     {
@@ -101,8 +104,10 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByFinancialImpact("2018-01-01", true);
-        //assert statements
-    }
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);    }
 
     public function testChargebacksActionable()
     {
@@ -110,7 +115,22 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getActionableChargebacks(true);
-        //assert statements
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);    }
+
+    public function testChargebackByCaseId()
+    {
+        $mock = $this->getMock('cnp\sdk\Communication');
+        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $this->chargebackRetrieval->setCommunication($mock);
+        $response = $this->chargebackRetrieval->getChargebackByCaseId("1333078000");
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertEquals('1333078000', $caseId);
     }
 
     public function testChargebacksbyToken()
@@ -119,8 +139,12 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByToken("100000");
-        //assert statements
-    }
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $token = XmlParser::getValueByTagName($response, "token");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertEquals('1000000', $token);    }
 
     public function testChargebacksByCardNumber()
     {
@@ -128,8 +152,12 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByCardNumber("1111000011110000", "1018");
-        //assert statements
-    }
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $cardNumberLast4 = XmlParser::getValueByTagName($response, "cardNumberLast4");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertEquals('0000', $cardNumberLast4);    }
 
     public function testChargebacksByArn()
     {
@@ -137,6 +165,10 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByArn("1000000000");
-        //assert statements
-    }
+        $transactionId = XmlParser::getValueByTagName($response, "transactionId");
+        $caseId = XmlParser::getValueByTagName($response, "caseId");
+        $acquirerReferenceNumber = XmlParser::getValueByTagName($response,"acquirerReferenceNumber");
+        $this->assertRegExp('/\d+/', $transactionId);
+        $this->assertRegExp('/\d+/', $caseId);
+        $this->assertEquals('1111111111', $acquirerReferenceNumber);    }
 }
