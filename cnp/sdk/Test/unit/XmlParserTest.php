@@ -23,8 +23,11 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
+
 namespace cnp\sdk\Test\unit;
+
 use cnp\sdk\XmlParser;
+
 class XmlParserTest extends \PHPUnit_Framework_TestCase
 {
     public function test_round_trip_xml_to_dom_and_back()
@@ -32,8 +35,45 @@ class XmlParserTest extends \PHPUnit_Framework_TestCase
         $orig = '<foo>bar</foo>';
         $dom = XmlParser::domParser($orig);
         $after = XmlParser::getDomDocumentAsString($dom);
-        $cleanedUp = str_replace('<?xml version="1.0" encoding="UTF-8"?>','',$after);
-        $cleanedUp = str_replace("\n",'',$cleanedUp);
-        $this->assertEquals($orig,$cleanedUp);
+        $cleanedUp = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $after);
+        $cleanedUp = str_replace("\n", '', $cleanedUp);
+        $this->assertEquals($orig, $cleanedUp);
+    }
+
+    public function test_getNodeByTagName()
+    {
+        $orig = '<foo>bar<test>test</test></foo>';
+        $dom = XmlParser::domParser($orig);
+        $domnode = XmlParser::getNodeByTagName($dom, 'test');
+        $this->assertTrue($domnode instanceof \DOMNode);
+        $this->assertEquals('test', $domnode->nodeValue);
+    }
+
+    public function test_getNodeListByTagName()
+    {
+        $orig = '<foo>bar<test>test1</test><test>test2</test></foo>';
+        $dom = XmlParser::domParser($orig);
+        $domnodelist = XmlParser::getNodeByTagName($dom, 'test');
+        $this->assertTrue($domnodelist instanceof \DOMNodeList);
+        $this->assertEquals('test', $domnodelist->item(0)->nodeValue);
+        $this->assertEquals(1, $domnodelist->count());
+    }
+
+    public function test_getValueByTagName()
+    {
+        $orig = '<foo>bar<test>test</test></foo>';
+        $dom = XmlParser::domParser($orig);
+        $domvalue = XmlParser::getValueByTagName($dom, 'test');
+        $this->assertTrue(is_string($domvalue));
+        $this->assertEquals('test', $domvalue);
+    }
+
+    public function test_getValueListByTagName()
+    {
+        $orig = '<foo>bar<test>test1</test><test>test2</test></foo>';
+        $dom = XmlParser::domParser($orig);
+        $domvaluelist = XmlParser::getValueListByTagName($dom, 'test');
+        $this->assertTrue(is_array($domvaluelist));
+        $this->assertContains('test', $domvaluelist);
     }
 }

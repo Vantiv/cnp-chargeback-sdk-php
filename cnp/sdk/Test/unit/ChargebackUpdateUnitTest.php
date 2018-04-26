@@ -31,7 +31,7 @@ use cnp\sdk\XmlParser;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
 
-class ChargebackUpdateTest extends \PHPUnit_Framework_TestCase
+class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
 {
     private $chargebackUpdate;
     private $expectedResponse;
@@ -49,63 +49,77 @@ class ChargebackUpdateTest extends \PHPUnit_Framework_TestCase
     public function testAssignCaseToUser()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->assignCaseToUser("1234000", "User0", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
-        $this->assertRegExp('/\d+/', $transactionId);    }
+        $this->assertRegExp('/\d+/', $transactionId);
+    }
 
     public function testAddNoteToCase()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->addNoteToCase("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
-        $this->assertRegExp('/\d+/', $transactionId);    }
+        $this->assertRegExp('/\d+/', $transactionId);
+    }
 
     public function testAssumeLiability()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->assumeLiability("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
-        $this->assertRegExp('/\d+/', $transactionId);    }
+        $this->assertRegExp('/\d+/', $transactionId);
+    }
 
     public function testRepresentCaseFull()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->representCase("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
-        $this->assertRegExp('/\d+/', $transactionId);    }
+        $this->assertRegExp('/\d+/', $transactionId);
+    }
 
     public function testRepresentCase()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->representCase("1234000", "Note", 1000);
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
-        $this->assertRegExp('/\d+/', $transactionId);    }
+        $this->assertRegExp('/\d+/', $transactionId);
+    }
 
     public function testRespondToRetrievalRequest()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->respondToRetrievalRequest("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
-        $this->assertRegExp('/\d+/', $transactionId);    }
-    
+        $this->assertRegExp('/\d+/', $transactionId);
+    }
+
     public function testRequestArbitration()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->requestArbitration("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
-        $this->assertRegExp('/\d+/', $transactionId);    }
+        $this->assertRegExp('/\d+/', $transactionId);
+    }
 }

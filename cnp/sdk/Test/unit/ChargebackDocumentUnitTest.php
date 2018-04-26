@@ -31,7 +31,7 @@ use cnp\sdk\Utils;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
 
-class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
+class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
 {
     private $chargebackDocument;
     private $documentToUpload;
@@ -82,7 +82,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
             fclose($file);
         }));
         $this->chargebackDocument->setCommunication($mock);
-        $response = $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", "test.tiff");
+        $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", "test.tiff");
         $this->assertTrue(file_exists($testFile));
         unlink($testFile);
     }
@@ -167,6 +167,4 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         fwrite($file, "test file");
         fclose($file);
     }
-
-
 }

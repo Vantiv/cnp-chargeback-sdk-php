@@ -63,7 +63,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     public function testChargebackRetrieveDocument()
     {
         $testFile = getcwd() . "/test.tiff";
-        $response = $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", $testFile);
+        $this->chargebackDocument->retrieveDocument(123000, "logo.tiff", $testFile);
         $this->assertTrue(file_exists($testFile));
         unlink($testFile);
     }
@@ -106,6 +106,23 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('123000', $caseId);
         $this->assertContains("logo.tiff", $documentId);
         $this->assertContains("doc.tiff", $documentId);
+    }
+
+    public function testErrorResponse()
+    {
+        $response = $this->chargebackDocument->uploadDocument(123001, $this->documentToUpload);
+        $responseCode = XmlParser::getValueByTagName($response, "responseCode");
+        $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
+        $this->assertEquals('001', $responseCode);
+        $this->assertEquals('Invalid Merchant', $responseMessage);
+
+        try {
+            $this->chargebackDocument->retrieveDocument("1234404", "logo.tiff", "test.tiff");
+            unlink("test.tiff");
+        } catch (\cnp\sdk\ChargebackException $e) {
+            $this->assertEquals($e->getMessage(), "Could not find requested object.");
+            $this->assertEquals($e->getCode(), 404);
+        }
     }
 
     public static function createTestFile($filepath)

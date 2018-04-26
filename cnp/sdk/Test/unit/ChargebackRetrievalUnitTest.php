@@ -31,7 +31,7 @@ use cnp\sdk\XmlParser;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
 
-class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
+class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 {
     private $chargebackRetrieval;
     private $expectedResponse;
@@ -90,40 +90,47 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
     public function testChargebackByDate()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByDate("2018-01-01");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
         $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertRegExp('/\d+/', $transactionId);
-        $this->assertRegExp('/\d+/', $caseId);    }
+        $this->assertRegExp('/\d+/', $caseId);
+    }
 
     public function testChargebacksByFinancialImpact()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByFinancialImpact("2018-01-01", true);
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
         $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertRegExp('/\d+/', $transactionId);
-        $this->assertRegExp('/\d+/', $caseId);    }
+        $this->assertRegExp('/\d+/', $caseId);
+    }
 
     public function testChargebacksActionable()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getActionableChargebacks(true);
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
         $caseId = XmlParser::getValueByTagName($response, "caseId");
         $this->assertRegExp('/\d+/', $transactionId);
-        $this->assertRegExp('/\d+/', $caseId);    }
+        $this->assertRegExp('/\d+/', $caseId);
+    }
 
     public function testChargebackByCaseId()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebackByCaseId("1333078000");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -136,7 +143,8 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
     public function testChargebacksbyToken()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByToken("100000");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -144,12 +152,14 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $token = XmlParser::getValueByTagName($response, "token");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
-        $this->assertEquals('1000000', $token);    }
+        $this->assertEquals('1000000', $token);
+    }
 
     public function testChargebacksByCardNumber()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByCardNumber("1111000011110000", "1018");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -157,18 +167,21 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $cardNumberLast4 = XmlParser::getValueByTagName($response, "cardNumberLast4");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
-        $this->assertEquals('0000', $cardNumberLast4);    }
+        $this->assertEquals('0000', $cardNumberLast4);
+    }
 
     public function testChargebacksByArn()
     {
         $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
+        $mock->expects($this->once())
+            ->method('httpGetRequest')->will($this->returnValue($this->expectedResponse));
         $this->chargebackRetrieval->setCommunication($mock);
         $response = $this->chargebackRetrieval->getChargebacksByArn("1000000000");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
         $caseId = XmlParser::getValueByTagName($response, "caseId");
-        $acquirerReferenceNumber = XmlParser::getValueByTagName($response,"acquirerReferenceNumber");
+        $acquirerReferenceNumber = XmlParser::getValueByTagName($response, "acquirerReferenceNumber");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
-        $this->assertEquals('1111111111', $acquirerReferenceNumber);    }
+        $this->assertEquals('1111111111', $acquirerReferenceNumber);
+    }
 }

@@ -103,7 +103,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
         $response = $this->chargebackRetrieval->getChargebacksByArn("1111111111");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
         $caseId = XmlParser::getValueByTagName($response, "caseId");
-        $acquirerReferenceNumber = XmlParser::getValueByTagName($response,"acquirerReferenceNumber");
+        $acquirerReferenceNumber = XmlParser::getValueByTagName($response, "acquirerReferenceNumber");
         $this->assertRegExp('/\d+/', $transactionId);
         $this->assertRegExp('/\d+/', $caseId);
         $this->assertEquals('1111111111', $acquirerReferenceNumber);
@@ -111,14 +111,11 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
 
     public function testErrorResponse()
     {
-        try
-        {
-            $response = $this->chargebackRetrieval->getChargebackByCaseId("404");
-        }
-        catch(\cnp\sdk\ChargebackException $e)
-        {
-            $this->assertEquals($e->getMessage(),"Could not find requested object.");
-            $this->assertEquals($e->getCode(),404);
+        try {
+            $this->chargebackRetrieval->getChargebackByCaseId("404");
+        } catch (\cnp\sdk\ChargebackException $e) {
+            $this->assertEquals($e->getMessage(), "Could not find requested object.");
+            $this->assertEquals($e->getCode(), 404);
         }
     }
 }

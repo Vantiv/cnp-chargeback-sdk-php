@@ -80,7 +80,7 @@ class ChargebackUpdateTest extends \PHPUnit_Framework_TestCase
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
         $this->assertRegExp('/\d+/', $transactionId);
     }
-    
+
     public function testRequestArbitration()
     {
         $response = $this->chargebackUpdate->requestArbitration("1234000", "Note");
@@ -90,14 +90,11 @@ class ChargebackUpdateTest extends \PHPUnit_Framework_TestCase
 
     public function testErrorResponse()
     {
-        try
-        {
-            $response = $this->chargebackUpdate->addNoteToCase("1234404", "Note");
-        }
-        catch(\cnp\sdk\ChargebackException $e)
-        {
-            $this->assertEquals($e->getMessage(),"Could not find requested object.");
-            $this->assertEquals($e->getCode(),404);
+        try {
+            $this->chargebackUpdate->addNoteToCase("1234404", "Note");
+        } catch (\cnp\sdk\ChargebackException $e) {
+            $this->assertEquals($e->getMessage(), "Could not find requested object.");
+            $this->assertEquals($e->getCode(), 404);
         }
     }
 }
