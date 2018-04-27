@@ -37,6 +37,8 @@ class Communication
         $this->useSimpleXml = $treeResponse;
         $this->config = Utils::getConfig($overrides);
         $this->url = $this->config['url'];
+        $this->printXml = $this->config['printXml'];
+        $this->neuterXml = $this->config['neuterXml'];
     }
 
     public function httpGetRequest($urlSuffix)

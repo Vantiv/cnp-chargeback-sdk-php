@@ -70,8 +70,8 @@ function initialize($urlList)
         print "Please input the proxy, if no proxy hit enter key: ";
         $line['proxy'] = formatConfigValue(STDIN);
 
-        $line['print_xml'] = '0';
-        $line['neuter_xml'] = "0";
+        $line['printXml'] = '0';
+        $line['neuterXml'] = "0";
         writeConfig($line, $handle);
         #default http timeout set to 500 ms
         fwrite($handle, "timeout =  500" . PHP_EOL);

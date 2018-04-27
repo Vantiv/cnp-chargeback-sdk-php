@@ -92,7 +92,6 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
         $this->chargebackDocument->setCommunication($mock);
         $this->chargebackDocument->retrieveDocumentToPath(123000, "logo.tiff", getcwd());
         $this->assertTrue(file_exists($testFile));
-        echo "filesize" . filesize($testFile);
         $this->assertTrue(filesize($testFile) == 1024);
         unlink($testFile);
     }
