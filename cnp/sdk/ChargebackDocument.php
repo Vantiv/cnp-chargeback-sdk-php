@@ -50,7 +50,7 @@ class ChargebackDocument
         $response = $this->communication->httpGetDocumentRequest($urlSuffix);
         $filepath = $downloadDirectoryPath . "/" . $documentId;
         file_put_contents($filepath, $response);
-        Utils::printToConsole("\n Document saved at: ", $filepath, $this->config['print_xml'], $this->config['neuter_xml']);
+        Utils::printToConsole("\n Document saved at: ", $filepath, $this->config['printXml'], $this->config['neuterXml']);
     }
 
     public function replaceDocument($caseId, $documentId, $uploadFilepath)

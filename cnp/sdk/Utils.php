@@ -105,6 +105,9 @@ class Utils
 
     public static function neuterString($str)
     {
+        $str = preg_replace("/<token>.*<\/token>/", "<token>****</token>", $str);
+        $str = preg_replace("/<cardNumberLast4>.*<\/cardNumberLast4>/", "<cardNumberLast4>****</cardNumberLast4>", $str);
         return $str;
     }
+
 }

@@ -13,9 +13,12 @@ use Exception;
 
 class ChargebackWebException extends \Exception
 {
-    public function __construct($message, $code = 0, Exception $previous = null)
+    public $errorList;
+
+    public function __construct($message, $errorList, $code = 0, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
+        $this->errorList = $errorList;
     }
 
     public function __toString()

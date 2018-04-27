@@ -132,8 +132,10 @@ class Communication
             throw new ChargebackWebException("There was an exception while fetching the response");
         } else if ($statusCode != 200 || $statusCode != "200") {
             Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
-            $errorMessage = $this->generateErrorMessage($httpResponse);
-            throw new ChargebackWebException($errorMessage, $statusCode);
+            $errorResponse = Utils::generateResponseObject($httpResponse, false);
+            $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
+            $errorMessage = $this->generateErrorMessage($errorMessageList);
+            throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
         }
     }
 
@@ -143,8 +145,10 @@ class Communication
             throw new ChargebackWebException("There was an exception while fetching the response");
         } else if ($statusCode != 200 || $statusCode != "200") {
             Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
-            $errorMessage = $this->generateErrorMessage($httpResponse);
-            throw new ChargebackWebException($errorMessage, $statusCode);
+            $errorResponse = Utils::generateResponseObject($httpResponse, false);
+            $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
+            $errorMessage = $this->generateErrorMessage($errorMessageList);
+            throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
         } else if (strpos($contentType, CNP_CONTENT_TYPE) !== false) {
             Utils::printToConsole("\nDocument Error Response: ", $httpResponse, $this->printXml, $this->neuterXml);
             $errorMessage = $this->generateDocumentErrorMessage($httpResponse);
@@ -183,10 +187,8 @@ class Communication
         return "Authorization: Basic " . base64_encode($username . ":" . $password);
     }
 
-    private function generateErrorMessage($errorResponseXml)
+    private function generateErrorMessage($errorMessageList)
     {
-        $errorResponse = Utils::generateResponseObject($errorResponseXml, false);
-        $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
         $errorMessage = "";
         $prefix = "";
         foreach ($errorMessageList as $error){

@@ -41,4 +41,12 @@ class UtilsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $cleanedUp);
     }
+
+    public function test_neuter_string()
+    {
+        $str = "<cardNumberLast4>sensitivedata</cardNumberLast4><token>stuff</token>";
+        $neuterStr = Utils::neuterString($str);
+
+        $this->assertEquals("<cardNumberLast4>****</cardNumberLast4><token>****</token>", $neuterStr);
+    }
 }
