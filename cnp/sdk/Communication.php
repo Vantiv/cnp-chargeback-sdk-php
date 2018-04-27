@@ -103,7 +103,8 @@ class Communication
         return $response;
     }
 
-    private function getHttpResponse($requestUrl, $requestType, $headers = array(), $options = array()){
+    private function getHttpResponse($requestUrl, $requestType, $headers = array(), $options = array())
+    {
         $responseArray = $this->execHttpRequest($requestUrl, $requestType, $headers, $options);
         $response = $responseArray['response'];
         $statusCode = $responseArray['statusCode'];
@@ -123,31 +124,31 @@ class Communication
         return array('response' => $response, 'statusCode' => $statusCode, 'contentType' => $contentType);
     }
 
-    private function validateResponse($response, $statusCode, $contentType)
+    private function validateResponse($httpResponse, $statusCode, $contentType)
     {
-        if (!$response) {
-            throw new ChargebackException("There was an exception while fetching the response.");
+        if (!$httpResponse) {
+            throw new ChargebackWebException("There was an exception while fetching the response");
         } else if ($statusCode != 200 || $statusCode != "200") {
-            Utils::printToConsole("\nError: ", $response, $this->printXml, $this->neuterXml);
-            $errorResponse = Utils::generateResponseObject($response, true);
-            throw new ChargebackException($errorResponse->errors->error, $statusCode);
+            Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
+            $errorMessage = $this->generateErrorMessage($httpResponse);
+            throw new ChargebackWebException($errorMessage, $statusCode);
         }
     }
 
     private function validateDocumentResponse($httpResponse, $statusCode, $contentType)
     {
         if (!$httpResponse) {
-            throw new ChargebackException("There was an exception while fetching the response.");
+            throw new ChargebackWebException("There was an exception while fetching the response");
         } else if ($statusCode != 200 || $statusCode != "200") {
-            Utils::printToConsole("\nError: ", $httpResponse, $this->printXml, $this->neuterXml);
-            $errorResponse = Utils::generateResponseObject($httpResponse, true);
-            throw new ChargebackException($errorResponse->errors->error, $statusCode);
-        } else if ($contentType == CNP_CONTENT_TYPE) {
-            $errorResponse = Utils::generateResponseObject($httpResponse, true);
-            throw new ChargebackException($httpResponse->responseMessage, $httpResponse->responseCode);
+            Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
+            $errorMessage = $this->generateErrorMessage($httpResponse);
+            throw new ChargebackWebException($errorMessage, $statusCode);
+        } else if (strpos($contentType, CNP_CONTENT_TYPE) !== false) {
+            Utils::printToConsole("\nDocument Error Response: ", $httpResponse, $this->printXml, $this->neuterXml);
+            $errorMessage = $this->generateDocumentErrorMessage($httpResponse);
+            $errorCode = $this->getDocumentErrorCode($httpResponse);
+            throw new ChargebackDocumentException($errorMessage, $errorCode);
         }
-
-        //check content type
     }
 
     private function generateBaseCurlHandler($requestUrl, $type, $headers, $options = array())
@@ -171,7 +172,6 @@ class Communication
 
         curl_setopt_array($ch, $defaultOptions + $options);
         return $ch;
-
     }
 
     private function generateAuthHeader()
@@ -179,5 +179,32 @@ class Communication
         $username = $this->config['username'];
         $password = $this->config['password'];
         return "Authorization: Basic " . base64_encode($username . ":" . $password);
+    }
+
+    private function generateErrorMessage($errorResponseXml)
+    {
+        $errorResponse = Utils::generateResponseObject($errorResponseXml, false);
+        $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
+        $errorMessage = "";
+        $prefix = "";
+        foreach ($errorMessageList as $error){
+            $errorMessage .= $prefix . $error;
+            $prefix = "\n";
+        }
+        return $errorMessage;
+    }
+
+    private function generateDocumentErrorMessage($documentResponseXml)
+    {
+        $errorResponse = Utils::generateResponseObject($documentResponseXml, false);
+        $errorMessage = XmlParser::getValueByTagName($errorResponse, 'responseMessage');
+        return $errorMessage;
+    }
+
+    private function getDocumentErrorCode($documentResponseXml)
+    {
+        $errorResponse = Utils::generateResponseObject($documentResponseXml, false);
+        $errorCode = XmlParser::getValueByTagName($errorResponse, 'responseCode');
+        return $errorCode;
     }
 }

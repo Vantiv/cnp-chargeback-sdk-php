@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: hvora
- * Date: 4/23/18
- * Time: 1:07 PM
+ * Date: 4/27/18
+ * Time: 9:51 AM
  */
 
 namespace cnp\sdk;
@@ -11,7 +11,7 @@ namespace cnp\sdk;
 
 use Exception;
 
-class ChargebackException extends \Exception
+class ChargebackDocumentException extends \Exception
 {
     public function __construct($message, $code = 0, Exception $previous = null)
     {
@@ -20,6 +20,6 @@ class ChargebackException extends \Exception
 
     public function __toString()
     {
-        return "ChargebackException : [{$this->code}]: {$this->message}\n";
+        return "ChargebackDocumentException : [{$this->code}]: {$this->message}\n";
     }
 }

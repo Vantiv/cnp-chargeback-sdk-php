@@ -26,6 +26,7 @@
 namespace cnp\sdk\Test\functional;
 
 use cnp\sdk\ChargebackRetrieval;
+use cnp\sdk\ChargebackWebException;
 use cnp\sdk\XmlParser;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
@@ -113,7 +114,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $this->chargebackRetrieval->getChargebackByCaseId("404");
-        } catch (\cnp\sdk\ChargebackException $e) {
+        } catch (ChargebackWebException $e) {
             $this->assertEquals($e->getMessage(), "Could not find requested object.");
             $this->assertEquals($e->getCode(), 404);
         }

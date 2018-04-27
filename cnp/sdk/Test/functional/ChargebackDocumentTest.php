@@ -26,12 +26,15 @@
 namespace cnp\sdk\Test\unit;
 
 use cnp\sdk\ChargebackDocument;
+use cnp\sdk\ChargebackDocumentException;
+use cnp\sdk\ChargebackWebException;
 use cnp\sdk\XmlParser;
 
 require_once realpath(__DIR__) . '/../../../../vendor/autoload.php';
 
 class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var ChargebackDocument */
     private $chargebackDocument;
     private $documentToUpload;
 
@@ -129,8 +132,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $response = $this->chargebackDocument->retrieveDocumentAsString("1234009", "logo.tiff");
-            echo $response;
-        } catch (\cnp\sdk\ChargebackException $e) {
+        } catch (ChargebackDocumentException $e) {
             $this->assertEquals($e->getMessage(), "Document Not Found");
             $this->assertEquals($e->getCode(), "009");
         }
@@ -140,7 +142,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $response = $this->chargebackDocument->retrieveDocumentAsString("1234404", "logo.tiff");
-        } catch (\cnp\sdk\ChargebackException $e) {
+        } catch (ChargebackWebException $e) {
             $this->assertEquals($e->getMessage(), "Could not find requested object.");
             $this->assertEquals($e->getCode(), 404);
         }

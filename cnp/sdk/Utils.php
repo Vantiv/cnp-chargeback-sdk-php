@@ -33,9 +33,13 @@ class Utils
         $config_array = null;
 
         $ini_file = realpath(dirname(__FILE__)) . '/chargeback_SDK_config.ini';
-        if (file_exists($ini_file)) {
-            @$config_array = parse_ini_file('chargeback_SDK_config.ini');
+
+        if (!file_exists($ini_file)) {
+            throw new ChargebackException("Could not fetch config file. Please check the config file or run Setup.php.");
         }
+
+        @$config_array = parse_ini_file('chargeback_SDK_config.ini');
+
 
         if (empty($config_array)) {
             $config_array = array();
@@ -90,8 +94,7 @@ class Utils
 
     public static function printToConsole($prefixMessage, $message, $printXml, $neuterXml = false)
     {
-        if($neuterXml)
-        {
+        if ($neuterXml) {
             $message = self::neuterString($message);
         }
 
