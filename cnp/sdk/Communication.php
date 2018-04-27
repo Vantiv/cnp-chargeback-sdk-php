@@ -131,11 +131,14 @@ class Communication
         if (!$httpResponse) {
             throw new ChargebackWebException("There was an exception while fetching the response");
         } else if ($statusCode != 200 || $statusCode != "200") {
-            Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
-            $errorResponse = Utils::generateResponseObject($httpResponse, false);
-            $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
-            $errorMessage = $this->generateErrorMessage($errorMessageList);
-            throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
+            if (strpos($contentType, CNP_CONTENT_TYPE) !== false) {
+                Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
+                $errorResponse = Utils::generateResponseObject($httpResponse, false);
+                $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
+                $errorMessage = $this->generateErrorMessage($errorMessageList);
+                throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
+            }
+            throw new ChargebackDocumentException($httpResponse, $statusCode);
         }
     }
 
@@ -143,17 +146,25 @@ class Communication
     {
         if (!$httpResponse) {
             throw new ChargebackWebException("There was an exception while fetching the response");
-        } else if ($statusCode != 200 || $statusCode != "200") {
-            Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
-            $errorResponse = Utils::generateResponseObject($httpResponse, false);
-            $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
-            $errorMessage = $this->generateErrorMessage($errorMessageList);
-            throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
-        } else if (strpos($contentType, CNP_CONTENT_TYPE) !== false) {
-            Utils::printToConsole("\nDocument Error Response: ", $httpResponse, $this->printXml, $this->neuterXml);
-            $errorMessage = $this->generateDocumentErrorMessage($httpResponse);
-            $errorCode = $this->getDocumentErrorCode($httpResponse);
-            throw new ChargebackDocumentException($errorMessage, $errorCode);
+        }
+
+        // if server returns xml
+        if (strpos($contentType, CNP_CONTENT_TYPE) !== false) {
+            if ($statusCode != 200 || $statusCode != "200") {
+                Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
+                $errorResponse = Utils::generateResponseObject($httpResponse, false);
+                $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
+                $errorMessage = $this->generateErrorMessage($errorMessageList);
+                throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
+            }
+            else {
+                Utils::printToConsole("\nDocument Error Response: ", $httpResponse, $this->printXml, $this->neuterXml);
+                $errorMessage = $this->generateDocumentErrorMessage($httpResponse);
+                $errorCode = $this->getDocumentErrorCode($httpResponse);
+                throw new ChargebackDocumentException($errorMessage, $errorCode);
+            }
+        } elseif ($statusCode != 200 || $statusCode != "200") {
+            throw new ChargebackDocumentException($httpResponse, $statusCode);
         }
     }
 
