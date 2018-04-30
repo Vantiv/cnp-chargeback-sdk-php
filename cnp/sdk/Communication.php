@@ -129,8 +129,8 @@ class Communication
     private function validateResponse($httpResponse, $statusCode, $contentType)
     {
         if (!$httpResponse) {
-            throw new ChargebackWebException("There was an exception while fetching the response");
-        } else if ($statusCode != 200 || $statusCode != "200") {
+            throw new ChargebackWebException("There was an exception while fetching the response.");
+        } else if ($statusCode != 200) {
             if (strpos($contentType, CNP_CONTENT_TYPE) !== false) {
                 Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
                 $errorResponse = Utils::generateResponseObject($httpResponse, false);
@@ -145,12 +145,12 @@ class Communication
     private function validateDocumentResponse($httpResponse, $statusCode, $contentType)
     {
         if (!$httpResponse) {
-            throw new ChargebackWebException("There was an exception while fetching the response");
+            throw new ChargebackDocumentException("There was an exception while fetching the requested document.");
         }
 
         // if server returns xml
         if (strpos($contentType, CNP_CONTENT_TYPE) !== false) {
-            if ($statusCode != 200 || $statusCode != "200") {
+            if ($statusCode != 200) {
                 Utils::printToConsole("\nError Response: ", $httpResponse, $this->printXml, $this->neuterXml);
                 $errorResponse = Utils::generateResponseObject($httpResponse, false);
                 $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
@@ -163,7 +163,7 @@ class Communication
                 $errorCode = $this->getDocumentErrorCode($httpResponse);
                 throw new ChargebackDocumentException($errorMessage, $errorCode);
             }
-        } elseif ($statusCode != 200 || $statusCode != "200") {
+        } elseif ($statusCode != 200) {
             throw new ChargebackWebException($httpResponse, $statusCode);
         }
     }
