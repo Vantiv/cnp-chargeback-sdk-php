@@ -50,9 +50,12 @@ class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('cnp\sdk\Communication');
         $mock->expects($this->once())
-            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+            ->method('httpPutRequest')
+            ->with($this->stringEndsWith("/chargebacks/1234000"))
+            ->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->assignCaseToUser("1234000", "User0", "Note");
+
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
         $this->assertRegExp('/\d+/', $transactionId);
     }
@@ -61,7 +64,9 @@ class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('cnp\sdk\Communication');
         $mock->expects($this->once())
-            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+            ->method('httpPutRequest')
+            ->with($this->stringEndsWith("/chargebacks/1234000"))
+            ->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->addNoteToCase("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -72,7 +77,9 @@ class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('cnp\sdk\Communication');
         $mock->expects($this->once())
-            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+            ->method('httpPutRequest')
+            ->with($this->stringEndsWith("/chargebacks/1234000"))
+            ->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->assumeLiability("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -83,7 +90,9 @@ class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('cnp\sdk\Communication');
         $mock->expects($this->once())
-            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+            ->method('httpPutRequest')
+            ->with($this->stringEndsWith("/chargebacks/1234000"))
+            ->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->representCase("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -94,7 +103,9 @@ class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('cnp\sdk\Communication');
         $mock->expects($this->once())
-            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+            ->method('httpPutRequest')
+            ->with($this->stringEndsWith("/chargebacks/1234000"))
+            ->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->representCase("1234000", "Note", 1000);
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -105,7 +116,9 @@ class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('cnp\sdk\Communication');
         $mock->expects($this->once())
-            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+            ->method('httpPutRequest')
+            ->with($this->stringEndsWith("/chargebacks/1234000"))
+            ->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->respondToRetrievalRequest("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -116,7 +129,9 @@ class ChargebackUpdateUnitTest extends \PHPUnit_Framework_TestCase
     {
         $mock = $this->getMock('cnp\sdk\Communication');
         $mock->expects($this->once())
-            ->method('httpPutRequest')->will($this->returnValue($this->expectedResponse));
+            ->method('httpPutRequest')
+            ->with($this->stringEndsWith("/chargebacks/1234000"))
+            ->will($this->returnValue($this->expectedResponse));
         $this->chargebackUpdate->setCommunication($mock);
         $response = $this->chargebackUpdate->requestArbitration("1234000", "Note");
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
