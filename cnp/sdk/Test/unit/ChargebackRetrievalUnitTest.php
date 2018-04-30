@@ -35,6 +35,7 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 {
     private $chargebackRetrieval;
     private $expectedResponse;
+    private $mock;
 
     public function setUp()
     {
@@ -85,16 +86,16 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
                                 </chargebackRetrievalResponse>';
 
         $this->expectedResponse = Utils::generateResponseObject($expectedResponseXml, false);
+        $this->mock = $this->getMock('cnp\sdk\Communication');
     }
 
     public function testChargebackByDate()
     {
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/chargebacks?date=2018-01-01"))
             ->will($this->returnValue($this->expectedResponse));
-        $this->chargebackRetrieval->setCommunication($mock);
+        $this->chargebackRetrieval->setCommunication($this->mock);
         $response = $this->chargebackRetrieval->getChargebacksByDate("2018-01-01");
 
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -105,12 +106,11 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 
     public function testChargebacksByFinancialImpact()
     {
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/chargebacks?date=2018-01-01&financialOnly=true"))
             ->will($this->returnValue($this->expectedResponse));
-        $this->chargebackRetrieval->setCommunication($mock);
+        $this->chargebackRetrieval->setCommunication($this->mock);
         $response = $this->chargebackRetrieval->getChargebacksByFinancialImpact("2018-01-01", true);
 
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -121,12 +121,11 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 
     public function testChargebacksActionable()
     {
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/chargebacks?actionable=true"))
             ->will($this->returnValue($this->expectedResponse));
-        $this->chargebackRetrieval->setCommunication($mock);
+        $this->chargebackRetrieval->setCommunication($this->mock);
         $response = $this->chargebackRetrieval->getActionableChargebacks(true);
 
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -137,12 +136,11 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 
     public function testChargebackByCaseId()
     {
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/chargebacks/1333078000"))
             ->will($this->returnValue($this->expectedResponse));
-        $this->chargebackRetrieval->setCommunication($mock);
+        $this->chargebackRetrieval->setCommunication($this->mock);
         $response = $this->chargebackRetrieval->getChargebackByCaseId("1333078000");
 
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -154,12 +152,11 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 
     public function testChargebacksbyToken()
     {
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/chargebacks?token=100000"))
             ->will($this->returnValue($this->expectedResponse));
-        $this->chargebackRetrieval->setCommunication($mock);
+        $this->chargebackRetrieval->setCommunication($this->mock);
         $response = $this->chargebackRetrieval->getChargebacksByToken("100000");
 
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -172,12 +169,11 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 
     public function testChargebacksByCardNumber()
     {
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/chargebacks?cardNumber=1111000011110000&expirationDate=1018"))
             ->will($this->returnValue($this->expectedResponse));
-        $this->chargebackRetrieval->setCommunication($mock);
+        $this->chargebackRetrieval->setCommunication($this->mock);
         $response = $this->chargebackRetrieval->getChargebacksByCardNumber("1111000011110000", "1018");
 
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");
@@ -190,12 +186,11 @@ class ChargebackRetrievalUnitTest extends \PHPUnit_Framework_TestCase
 
     public function testChargebacksByArn()
     {
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/chargebacks?arn=1000000000"))
             ->will($this->returnValue($this->expectedResponse));
-        $this->chargebackRetrieval->setCommunication($mock);
+        $this->chargebackRetrieval->setCommunication($this->mock);
         $response = $this->chargebackRetrieval->getChargebacksByArn("1000000000");
 
         $transactionId = XmlParser::getValueByTagName($response, "transactionId");

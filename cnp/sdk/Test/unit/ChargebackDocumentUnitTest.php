@@ -35,12 +35,14 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
 {
     private $chargebackDocument;
     private $documentToUpload;
+    private $mock;
 
     public function setUp()
     {
         $this->chargebackDocument = new ChargebackDocument();
         $this->documentToUpload = getcwd() . "/test.jpg";
         self::createTestFile($this->documentToUpload);
+        $this->mock = $this->getMock('cnp\sdk\Communication');
     }
 
     public function tearDown()
@@ -58,12 +60,11 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
                                   <responseMessage>Success</responseMessage>
                                 </chargebackDocumentUploadResponse>';
         $expectedResponse = Utils::generateResponseObject($expectedResponseXml, false);
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpPostDocumentRequest')
             ->with($this->stringEndsWith("/services/chargebacks/upload/123000/test.jpg"), $this->stringEndsWith("/test.jpg"))
             ->will($this->returnValue($expectedResponse));
-        $this->chargebackDocument->setCommunication($mock);
+        $this->chargebackDocument->setCommunication($this->mock);
         $response = $this->chargebackDocument->uploadDocument(123000, $this->documentToUpload);
 
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
@@ -79,12 +80,11 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
     public function testChargebackRetrieveDocumentAsString()
     {
         $mockResponse = str_repeat(rand(0, 9), 1024);
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetDocumentRequest')
             ->with($this->stringEndsWith("/services/chargebacks/retrieve/123000/logo.tiff"))
             ->will($this->returnValue($mockResponse));
-        $this->chargebackDocument->setCommunication($mock);
+        $this->chargebackDocument->setCommunication($this->mock);
         $response = $this->chargebackDocument->retrieveDocumentAsString(123000, "logo.tiff");
 
         $this->assertTrue($response != NULL);
@@ -95,12 +95,11 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
     {
         $testFile = getcwd() . "/logo.tiff";
         $mockResponse = str_repeat(rand(0, 9), 1024);
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetDocumentRequest')
             ->with($this->stringEndsWith("/services/chargebacks/retrieve/123000/logo.tiff"))
             ->will($this->returnValue($mockResponse));
-        $this->chargebackDocument->setCommunication($mock);
+        $this->chargebackDocument->setCommunication($this->mock);
         $this->chargebackDocument->retrieveDocumentToPath(123000, "logo.tiff", getcwd());
 
         $this->assertTrue(file_exists($testFile));
@@ -118,12 +117,11 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
                                   <responseMessage>Success</responseMessage>
                                 </chargebackDocumentUploadResponse>';
         $expectedResponse = Utils::generateResponseObject($expectedResponseXml, false);
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpPutDocumentRequest')
             ->with($this->stringEndsWith("/services/chargebacks/replace/123000/doc.pdf"), $this->stringEndsWith("/test.jpg"))
             ->will($this->returnValue($expectedResponse));
-        $this->chargebackDocument->setCommunication($mock);
+        $this->chargebackDocument->setCommunication($this->mock);
         $response = $this->chargebackDocument->replaceDocument(123000, "doc.pdf", $this->documentToUpload);
 
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
@@ -146,12 +144,11 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
                                   <responseMessage>Success</responseMessage>
                                 </chargebackDocumentUploadResponse>';
         $expectedResponse = Utils::generateResponseObject($expectedResponseXml, false);
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpDeleteDocumentRequest')
             ->with($this->stringEndsWith("/services/chargebacks/remove/123000/logo.tiff"))
             ->will($this->returnValue($expectedResponse));
-        $this->chargebackDocument->setCommunication($mock);
+        $this->chargebackDocument->setCommunication($this->mock);
         $response = $this->chargebackDocument->removeDocument(123000, "logo.tiff");
 
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
@@ -175,12 +172,11 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
                                   <responseMessage>Success</responseMessage>
                                 </chargebackDocumentUploadResponse>';
         $expectedResponse = Utils::generateResponseObject($expectedResponseXml, false);
-        $mock = $this->getMock('cnp\sdk\Communication');
-        $mock->expects($this->once())
+        $this->mock->expects($this->once())
             ->method('httpGetRequest')
             ->with($this->stringEndsWith("/services/chargebacks/list/123000"))
             ->will($this->returnValue($expectedResponse));
-        $this->chargebackDocument->setCommunication($mock);
+        $this->chargebackDocument->setCommunication($this->mock);
         $response = $this->chargebackDocument->listDocuments(123000);
 
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");

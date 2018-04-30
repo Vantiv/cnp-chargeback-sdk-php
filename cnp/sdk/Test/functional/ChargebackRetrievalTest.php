@@ -114,6 +114,7 @@ class ChargebackRetrievalTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $this->chargebackRetrieval->getChargebackByCaseId("404");
+            $this->fail("Expected Exception");
         } catch (ChargebackWebException $e) {
             $this->assertEquals($e->getMessage(), "Could not find requested object.");
             $this->assertEquals($e->getCode(), 404);

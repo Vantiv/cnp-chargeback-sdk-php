@@ -137,6 +137,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $response = $this->chargebackDocument->retrieveDocumentAsString("1234009", "logo.tiff");
+            $this->fail("Expected Exception");
         } catch (ChargebackDocumentException $e) {
             $this->assertEquals($e->getMessage(), "Document Not Found");
             $this->assertEquals($e->getCode(), "009");
@@ -147,6 +148,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $response = $this->chargebackDocument->retrieveDocumentAsString("1234404", "logo.tiff");
+            $this->fail("Expected Exception");
         } catch (ChargebackWebException $e) {
             $this->assertEquals($e->getMessage(), "Could not find requested object.");
             $this->assertEquals($e->getCode(), 404);
