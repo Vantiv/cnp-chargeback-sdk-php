@@ -93,6 +93,7 @@ class ChargebackUpdateTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $this->chargebackUpdate->addNoteToCase("1234404", "Note");
+            $this->fail("Expected Exception");
         } catch (ChargebackWebException $e) {
             $this->assertEquals($e->getMessage(), "Could not find requested object.");
             $this->assertEquals($e->getCode(), 404);
