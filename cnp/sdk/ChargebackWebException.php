@@ -15,7 +15,7 @@ class ChargebackWebException extends \Exception
 {
     public $errorList;
 
-    public function __construct($message, $errorList, $code = 0, Exception $previous = null)
+    public function __construct($message, $code = 0, $errorList = null, Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->errorList = $errorList;

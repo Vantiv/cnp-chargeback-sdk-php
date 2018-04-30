@@ -136,9 +136,9 @@ class Communication
                 $errorResponse = Utils::generateResponseObject($httpResponse, false);
                 $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
                 $errorMessage = $this->generateErrorMessage($errorMessageList);
-                throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
+                throw new ChargebackWebException($errorMessage, $statusCode, $errorMessageList);
             }
-            throw new ChargebackDocumentException($httpResponse, $statusCode);
+            throw new ChargebackWebException($httpResponse, $statusCode);
         }
     }
 
@@ -155,7 +155,7 @@ class Communication
                 $errorResponse = Utils::generateResponseObject($httpResponse, false);
                 $errorMessageList = XmlParser::getValueListByTagName($errorResponse, 'error');
                 $errorMessage = $this->generateErrorMessage($errorMessageList);
-                throw new ChargebackWebException($errorMessage, $errorMessageList, $statusCode);
+                throw new ChargebackWebException($errorMessage, $statusCode, $errorMessageList);
             }
             else {
                 Utils::printToConsole("\nDocument Error Response: ", $httpResponse, $this->printXml, $this->neuterXml);
@@ -164,7 +164,7 @@ class Communication
                 throw new ChargebackDocumentException($errorMessage, $errorCode);
             }
         } elseif ($statusCode != 200 || $statusCode != "200") {
-            throw new ChargebackDocumentException($httpResponse, $statusCode);
+            throw new ChargebackWebException($httpResponse, $statusCode);
         }
     }
 
