@@ -8,5 +8,3 @@ reports/
 composer.lock
 /lib
 /chargeback_SDK_config.ini
-cnp/sdk/chargeback_SDK_config.ini
-

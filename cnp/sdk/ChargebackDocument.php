@@ -59,9 +59,9 @@ class ChargebackDocument
         return $this->communication->httpPutDocumentRequest($urlSuffix, $uploadFilepath);
     }
 
-    public function removeDocument($caseId, $documentId)
+    public function deleteDocument($caseId, $documentId)
     {
-        $urlSuffix = self::SERVICE_ROUTE . "/remove/" . $caseId . "/" . $documentId;
+        $urlSuffix = self::SERVICE_ROUTE . "/delete/" . $caseId . "/" . $documentId;
         return $this->communication->httpDeleteDocumentRequest($urlSuffix);
 
     }

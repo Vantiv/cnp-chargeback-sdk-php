@@ -118,7 +118,7 @@ class CertDocumentationTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(file_exists($documentToRetrieve));
         unlink($documentToRetrieve);
 
-        $response = $this->chargebackDocument->removeDocument($caseId, "test.gif");
+        $response = $this->chargebackDocument->deleteDocument($caseId, "test.gif");
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
         $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
         $this->assertEquals('000', $responseCode);

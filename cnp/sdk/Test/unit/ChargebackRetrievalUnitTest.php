@@ -23,7 +23,7 @@
 * OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace cnp\sdk\Test\functional;
+namespace cnp\sdk\Test\unit;
 
 use cnp\sdk\ChargebackRetrieval;
 use cnp\sdk\Utils;

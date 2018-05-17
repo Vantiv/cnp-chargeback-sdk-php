@@ -146,10 +146,10 @@ class ChargebackDocumentUnitTest extends \PHPUnit_Framework_TestCase
         $expectedResponse = Utils::generateResponseObject($expectedResponseXml, false);
         $this->mock->expects($this->once())
             ->method('httpDeleteDocumentRequest')
-            ->with($this->stringEndsWith("/services/chargebacks/remove/123000/logo.tiff"))
+            ->with($this->stringEndsWith("/services/chargebacks/delete/123000/logo.tiff"))
             ->will($this->returnValue($expectedResponse));
         $this->chargebackDocument->setCommunication($this->mock);
-        $response = $this->chargebackDocument->removeDocument(123000, "logo.tiff");
+        $response = $this->chargebackDocument->deleteDocument(123000, "logo.tiff");
 
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
         $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");

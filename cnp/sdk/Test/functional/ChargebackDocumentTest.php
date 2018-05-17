@@ -99,7 +99,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
 
     public function testChargebackDeleteDocument()
     {
-        $response = $this->chargebackDocument->removeDocument(123000, "logo.tiff");
+        $response = $this->chargebackDocument->deleteDocument(123000, "logo.tiff");
         $responseCode = XmlParser::getValueByTagName($response, "responseCode");
         $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
         $documentId = XmlParser::getValueByTagName($response, "documentId");
