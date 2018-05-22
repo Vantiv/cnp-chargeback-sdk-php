@@ -42,8 +42,9 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->chargebackDocument = new ChargebackDocument();
+
         $this->documentToUpload = getcwd() . "/test.jpg";
-        self::createTestFile($this->documentToUpload, 1024);
+        self::createTestImageFile($this->documentToUpload);
 
         $this->documentToUpload2 = getcwd() . "/test.txt";
         self::createTestFile($this->documentToUpload2, 1024);
@@ -161,5 +162,10 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $data = str_repeat(rand(0, 9), $bytes);
         fwrite($file, $data);
         fclose($file);
+    }
+
+    public static function createTestImageFile($filepath)
+    {
+        imagejpeg(imagecreatetruecolor(50,50), $filepath);
     }
 }

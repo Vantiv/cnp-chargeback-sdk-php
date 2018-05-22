@@ -82,11 +82,9 @@ class Communication
     public function httpPostDocumentRequest($urlSuffix, $uploadFilepath)
     {
         $requestUrl = $this->url . $urlSuffix;
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
         Utils::printToConsole("\nPOST request to: ", $requestUrl, $this->printXml, $this->neuterXml);
         Utils::printToConsole("\nFile: ", $uploadFilepath, $this->printXml, $this->neuterXml);
-        //$headers = array("Content-Type: " . mime_content_type($uploadFilepath));
-        $headers = array("Content-Type: " . "image/jpeg");
+        $headers = array("Content-Type: " . mime_content_type($uploadFilepath));
         $file = fopen($uploadFilepath, 'r');
         $options = array(CURLOPT_INFILE => $file);
         $response = $this->getHttpResponse($requestUrl, "POST", $headers, $options);
@@ -99,8 +97,7 @@ class Communication
         $requestUrl = $this->url . $urlSuffix;
         Utils::printToConsole("\nPUT request to: ", $requestUrl, $this->printXml, $this->neuterXml);
         Utils::printToConsole("\nFile: ", $uploadFilepath, $this->printXml, $this->neuterXml);
-        //$headers = array("Content-Type: " . mime_content_type($uploadFilepath));
-        $headers = array("Content-Type: " . "image/jpeg");
+        $headers = array("Content-Type: " . mime_content_type($uploadFilepath));
         $file = fopen($uploadFilepath, 'r');
         $options = array(CURLOPT_INFILE => $file);
         $response = $this->getHttpResponse($requestUrl, "PUT", $headers, $options);
