@@ -43,7 +43,7 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
     {
         $this->chargebackDocument = new ChargebackDocument();
 
-        $this->documentToUpload = getcwd() . "/test.jpg";
+        $this->documentToUpload = "test.jpg";
 
         $this->documentToUpload2 = getcwd() . "/test.txt";
         self::createTestFile($this->documentToUpload2, 1024);
