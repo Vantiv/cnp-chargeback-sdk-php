@@ -1,6 +1,6 @@
 = Cnp Chargeback SDK CHANGELOG
 
-(May 24, 2018)
+== Version 2.1.1 (May 24, 2018)
 * Changed 'removed' http method to 'delete'
 * Fixed PrintXML functionality
 
