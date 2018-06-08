@@ -61,8 +61,8 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
         $documentId = XmlParser::getValueByTagName($response, "documentId");
         $caseId = XmlParser::getValueByTagName($response, "caseId");
-        $this->assertEquals('000', $responseCode);
-        $this->assertEquals('Success', $responseMessage);
+        $this->assertEquals('013', $responseCode);
+        $this->assertEquals('Invalid File Content', $responseMessage);
         $this->assertEquals('test.jpg', $documentId);
         $this->assertEquals('123000', $caseId);
     }
@@ -90,8 +90,8 @@ class ChargebackDocumentTest extends \PHPUnit_Framework_TestCase
         $responseMessage = XmlParser::getValueByTagName($response, "responseMessage");
         $documentId = XmlParser::getValueByTagName($response, "documentId");
         $caseId = XmlParser::getValueByTagName($response, "caseId");
-        $this->assertEquals('000', $responseCode);
-        $this->assertEquals('Success', $responseMessage);
+        $this->assertEquals('013', $responseCode);
+        $this->assertEquals('Invalid File Content', $responseMessage);
         $this->assertEquals('doc.pdf', $documentId);
         $this->assertEquals('123000', $caseId);
     }
