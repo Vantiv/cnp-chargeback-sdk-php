@@ -1,0 +1,22 @@
+language: php
+notifications:
+ email:
+  - sdksupport@vantiv.com
+env:
+ global:
+  - BUILD_DIR=`pwd`
+  - CHARGEBACK_CONFIG_DIR=$BUILD_DIR/cnp/sdk
+  - CHARGEBACK_CONFIG_FILE=$CHARGEBACK_CONFIG_DIR/.chargeback_SDK_config.ini
+script:
+ - echo $BUILD_DIR
+ - echo $CHARGEBACK_CONFIG_FILE
+ - echo 'username=USERNAME'>$CHARGEBACK_CONFIG_FILE
+ - echo 'password=PASSWORD'>>$CHARGEBACK_CONFIG_FILE
+ - echo 'url=https://www.testvantivcnp.com/sandbox'>>$CHARGEBACK_CONFIG_FILE
+ - echo 'currency_merchant_map ['''DEFAULT''']=1288791'>>$CHARGEBACK_CONFIG_FILE
+ - echo 'timeout=50000'>>$CHARGEBACK_CONFIG_FILE
+ - echo 'printXml=1'>>$CHARGEBACK_CONFIG_FILE
+ - cat $CHARGEBACK_CONFIG_FILE
+ - phpunit --stop-on-error --stop-on-failure --stop-on-skipped --stop-on-incomplete --log-junit $BUILD_DIR/reports/tests.xml
+after_success:
+ - bash <(curl -s https://codecov.io/bash)
