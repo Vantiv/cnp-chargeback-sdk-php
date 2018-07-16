@@ -33,7 +33,8 @@ class ChargebackDocument
 
     public function uploadDocument($caseId, $uploadFilepath)
     {
-        $documentId = end(explode("/", $uploadFilepath));
+        $explodedParams = explode("/", $uploadFilepath);
+        $documentId = end($explodedParams);
         $urlSuffix = self::SERVICE_ROUTE . "/upload/" . $caseId . "/" . $documentId;
         return $this->communication->httpPostDocumentRequest($urlSuffix, $uploadFilepath);
     }
