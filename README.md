@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/Vantiv/cnp-chargeback-sdk-php.svg?branch=2.x)](https://travis-ci.org/Vantiv/cnp-chargeback-sdk-php)
 [![codecov](https://codecov.io/gh/Vantiv/cnp-chargeback-sdk-php/branch/2.x/graph/badge.svg)](https://codecov.io/gh/Vantiv/cnp-chargeback-sdk-php)
 
 
