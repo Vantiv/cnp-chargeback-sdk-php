@@ -93,7 +93,7 @@ class ChargebackRetrieval
     private function getRetrievalResponse($parameters)
     {
         $urlSuffix = self::SERVICE_ROUTE;
-        $prefix = "?";
+        $prefix = "/?";
         foreach ($parameters as $key => $value) {
             $urlSuffix .= $prefix . $key . "=" . $value;
             $prefix = "&";
